@@ -1,5 +1,5 @@
 # Stage 1: Build stage
-FROM node:18 AS build
+FROM node:22 AS build
 
 # Set working directory
 WORKDIR /app
@@ -17,7 +17,7 @@ COPY . .
 # RUN npm run build   # Uncomment if there's a build script
 
 # Stage 2: Production stage
-FROM node:18-slim
+FROM node:22-slim
 
 # Set working directory
 WORKDIR /app
