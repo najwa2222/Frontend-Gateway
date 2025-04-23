@@ -1,0 +1,88 @@
+<div class="card shadow">
+  <div class="card-header bg-warning text-white">
+    <h3 class="mb-0"><i class="fas fa-archive me-2"></i> أرشيف الاعتراضات</h3>
+  </div>
+
+  <div class="card-body">
+    <div class="alert alert-info">
+      <i class="fas fa-info-circle me-2"></i> هنا يتم عرض جميع الاعتراضات المحلولة والمؤرشفة
+    </div>
+
+    <div class="d-flex justify-content-between mb-3">
+      <!-- Search Form -->
+      <form action="/admin/archive" method="GET" class="d-flex">
+        <div class="input-group">
+          <input type="text" name="search" class="form-control" placeholder="البحث برقم المعاملة..." value="{{searchTerm}}">
+          <button class="btn btn-primary" type="submit">
+            <i class="fas fa-search"></i> بحث
+          </button>
+          {{#if searchTerm}}
+          <a href="/admin/archive" class="btn btn-secondary">
+            <i class="fas fa-times"></i> إلغاء البحث
+          </a>
+          {{/if}}
+        </div>
+      </form>
+
+      <a href="/admin/dashboard" class="btn btn-primary ms-2">
+        <i class="fas fa-cogs me-1"></i> العودة للوحة الإدارة
+      </a>
+    </div>
+
+    {{#if rows}}
+      <div class="table-responsive">
+        <table class="table table-hover text-center">
+          <thead class="table-dark">
+            <tr>
+              <th>رقم الاعتراض</th>
+              <th>اسم المزارع</th>
+              <th>رقم المعاملة</th>
+              <th>الحالة</th>
+              <th>تاريخ التقديم</th>
+              <th>تاريخ الحل</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each rows}}
+            <tr>
+              <td>{{code}}</td>
+              <td>{{first_name}} {{last_name}}</td>
+              <td>{{transaction_number}}</td>
+              <td>
+                <span class="badge bg-{{getBadgeClass status}}">
+                  {{arStatus status}}
+                </span>
+              </td>
+              <td dir="ltr" class="text-center">{{formatDate created_at}}</td>
+              <td dir="ltr" class="text-center">{{formatDate updated_at}}</td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+
+      {{#if totalPages}}
+      <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+          {{#each (range 1 totalPages)}}
+          <li class="page-item {{#if (eq this ../page)}}active{{/if}}">
+            <a class="page-link" href="/admin/archive?page={{this}}{{#if ../searchTerm}}&search={{../searchTerm}}{{/if}}">{{this}}</a>
+          </li>
+          {{/each}}
+        </ul>
+      </nav>
+      {{/if}}
+    {{else}}
+    <div class="text-center py-5">
+      <i class="fas fa-folder-open fa-4x text-muted"></i>
+      <h4 class="my-3">
+        {{#if searchTerm}}
+        لا توجد نتائج مطابقة لبحثك
+        {{else}}
+        لا توجد اعتراضات مؤرشفة
+        {{/if}}
+      </h4>
+    </div>
+    {{/if}}
+  </div>
+</div>

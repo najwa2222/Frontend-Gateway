@@ -1,0 +1,28 @@
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="auth-form">
+      <h2><i class="fas fa-user-shield me-2"></i>تسجيل دخول المدير</h2>
+      
+      <form action="/admin/login" method="POST">
+        <div class="form-group">
+          <label for="username"><i class="fas fa-user me-1"></i> اسم المستخدم</label>
+          <input type="text" id="username" name="username" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password"><i class="fas fa-lock me-1"></i> كلمة المرور</label>
+          <input type="password" id="password" name="password" class="form-control" required>
+        </div>
+        
+        <button type="submit" class="btn btn-secondary btn-block mt-4">
+          دخول <i class="fas fa-sign-in-alt me-2"></i>
+        </button>
+      </form>
+      
+      <hr>
+      <p class="text-center">
+        <a href="/">العودة للصفحة الرئيسية</a>
+      </p>
+    </div>
+  </div>
+</div>

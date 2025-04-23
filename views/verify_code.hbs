@@ -1,0 +1,44 @@
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h3 class="mb-0"><i class="fas fa-sms"></i> التحقق من رمز SMS</h3>
+            </div>
+            
+            <div class="card-body">
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> تم إرسال رمز التحقق إلى رقم الجوال المسجل
+                </div>
+                
+                <form action="/farmer/verify-code" method="POST">
+                    <input type="hidden" name="national_id" value="{{national_id}}">
+                    
+                    <div class="mb-4">
+                        <label class="form-label">رمز التحقق (6 أرقام)</label>
+                        <div class="d-flex justify-content-between gap-2">
+                            <input type="text" name="code1" maxlength="1" class="form-control text-center fw-bold" required>
+                            <input type="text" name="code2" maxlength="1" class="form-control text-center fw-bold" required>
+                            <input type="text" name="code3" maxlength="1" class="form-control text-center fw-bold" required>
+                            <input type="text" name="code4" maxlength="1" class="form-control text-center fw-bold" required>
+                            <input type="text" name="code5" maxlength="1" class="form-control text-center fw-bold" required>
+                            <input type="text" name="code6" maxlength="1" class="form-control text-center fw-bold" required>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-info">
+                            <i class="fas fa-check"></i> تحقق من الرمز
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="mt-3 text-center">
+                    <a href="/farmer/forgot-password" class="text-decoration-none">
+                        <i class="fas fa-redo"></i> إعادة إرسال الرمز
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,72 @@
+/* rtl.css */
+body {
+    direction: rtl;
+    text-align: right;
+  }
+  
+  .navbar-nav {
+    padding-right: 0;
+  }
+  
+  .form-group label {
+    float: right;
+  }
+  
+  .form-check-label {
+    padding-right: 1.25rem;
+  }
+  
+  .custom-control-label::before,
+  .custom-control-label::after {
+    right: -1.25rem;
+    left: auto;
+  }
+  
+  .mr-2 {
+    margin-right: 0!important;
+    margin-left: 0.5rem!important;
+  }
+  
+  .ml-2 {
+    margin-left: 0!important;
+    margin-right: 0.5rem!important;
+  }
+  
+  /* Add more RTL overrides as needed */
+
+  /* RTL Overrides */
+body { 
+  text-align: right;
+  direction: rtl;
+}
+
+.form-check-label {
+  margin-right: 1.5em;
+  margin-left: 0;
+}
+
+.form-check-input {
+  margin-left: 0;
+  margin-right: -1.5em;
+}
+
+.ms-auto {
+  margin-right: auto !important;
+  margin-left: 0 !important;
+}
+
+/* Custom Badge Colors */
+.badge.bg-warning { background-color: #ffc107; color: #000; }
+.badge.bg-success { background-color: #198754; }
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}

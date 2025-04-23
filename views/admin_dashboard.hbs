@@ -1,0 +1,94 @@
+<div class="card shadow">
+  <div class="card-header bg-danger text-white">
+    <h3 class="mb-0"><i class="fas fa-user-shield me-2"></i> لوحة إدارة الاعتراضات</h3>
+  </div>
+
+  <div class="card-body">
+    <!-- Search Form -->
+    <form action="/admin/dashboard" method="GET" class="mb-4">
+      <div class="input-group">
+        <input type="text" name="search" class="form-control" placeholder="البحث برقم المعاملة..." value="{{searchTerm}}">
+        <button class="btn btn-primary" type="submit">
+          <i class="fas fa-search"></i> بحث
+        </button>
+        {{#if searchTerm}}
+        <a href="/admin/dashboard" class="btn btn-secondary">
+          <i class="fas fa-times"></i> إلغاء البحث
+        </a>
+        {{/if}}
+      </div>
+    </form>
+
+    <div class="table-responsive">
+      <table class="table table-hover text-center">
+        <thead class="table-dark">
+          <tr>
+            <th>رقم الاعتراض</th>
+            <th>اسم المزارع</th>
+            <th>رقم المعاملة</th>
+            <th>الحالة</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each rows}}
+          <tr>
+            <td>{{code}}</td>
+            <td>{{first_name}} {{last_name}}</td>
+            <td>{{transaction_number}}</td>
+            <td>
+              <span class="badge bg-{{getBadgeClass status}}">
+                {{arStatus status}}
+              </span>
+            </td>
+            <td>
+              <div class="btn-group">
+                {{#if (eq status "pending")}}
+                <form action="/admin/objection/{{id}}/review" method="POST">
+                  <button type="submit" class="btn btn-sm btn-info">
+                    مراجعة <i class="fas fa-check me-1"></i>
+                  </button>
+                </form>
+                {{/if}}
+
+                {{#if (eq status "reviewed")}}
+                <form action="/admin/objection/{{id}}/resolve" method="POST">
+                  <button type="submit" class="btn btn-sm btn-success">
+                    حل <i class="fas fa-check-double me-1"></i>
+                  </button>
+                </form>
+                {{/if}}
+              </div>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+
+    {{#if rows.length}}
+      {{#if totalPages}}
+      <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+          {{#each (range 1 totalPages)}}
+          <li class="page-item {{#if (eq this ../page)}}active{{/if}}">
+            <a class="page-link" href="/admin/dashboard?page={{this}}{{#if ../searchTerm}}&search={{../searchTerm}}{{/if}}">{{this}}</a>
+          </li>
+          {{/each}}
+        </ul>
+      </nav>
+      {{/if}}
+    {{else}}
+    <div class="text-center py-5">
+      <i class="fas fa-folder-open fa-4x text-muted"></i>
+      <h4 class="my-3">
+        {{#if searchTerm}}
+        لا توجد نتائج مطابقة لبحثك
+        {{else}}
+        لا توجد اعتراضات تحتاج المعالجة حاليا
+        {{/if}}
+      </h4>
+    </div>
+    {{/if}}
+  </div>
+</div>
