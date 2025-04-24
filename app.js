@@ -281,6 +281,21 @@ app.post('/admin/objection/:id/resolve', async (req,res)=>{
 app.get('/farmer/logout',(req,res)=> req.session.destroy(()=>res.redirect('/')));
 app.get('/admin/logout',(req,res)=>  req.session.destroy(()=>res.redirect('/')));
 
+
+// check heath
+app.get('/health-pod', async (req, res) => {
+  if (!connection) {
+    return res.status(503).send('DB not connected yet');
+  }
+  try {
+    await connection.query('SELECT 1');
+    res.status(200).send('OK');
+  } catch (err) {
+    console.error('Health check failed:', err.message);
+    res.status(500).send('DB query failed');
+  }
+});
+
 // Debug route proxy
 app.get('/debug/env', async (req,res)=>{
   try {
