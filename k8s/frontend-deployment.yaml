@@ -40,3 +40,13 @@ spec:
           httpGet:
             path: /livez
             port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 3
+        readinessProbe: # Added readiness probe
+          httpGet:
+            path: /livez
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 3
