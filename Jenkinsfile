@@ -104,6 +104,7 @@ pipeline {
           kubectl apply -n ${KUBE_NAMESPACE} -f k8s/app-secret.yaml
           kubectl apply -n ${KUBE_NAMESPACE} -f k8s/frontend-deployment.yaml
           kubectl apply -n ${KUBE_NAMESPACE} -f k8s/frontend-service.yaml
+          kubectl rollout status deployment/gateway-frontend -n ${KUBE_NAMESPACE} --timeout=300s
         """
       }
     }
