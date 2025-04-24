@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: gateway-frontend
-        image: najwa22/gateway-frontend:{{ BUILD_TAG }}
+        image: najwa22/gateway-frontend:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
