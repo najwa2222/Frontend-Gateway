@@ -40,10 +40,3 @@ spec:
           httpGet:
             path: /livez
             port: 3000
-            
-        readinessProbe:
-          httpGet:
-            path: /health-pod
-            port: 3000
-          initialDelaySeconds: 5
-          periodSeconds: 2
