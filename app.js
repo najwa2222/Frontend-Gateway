@@ -282,27 +282,6 @@ app.get('/farmer/logout',(req,res)=> req.session.destroy(()=>res.redirect('/')))
 app.get('/admin/logout',(req,res)=>  req.session.destroy(()=>res.redirect('/')));
 
 
-// in pod check heath
-const mysql = require('mysql2/promise');
-
-app.get('/health-pod', async (req, res) => {
-  try {
-    const connection = await mysql.createConnection({
-      host: process.env.MYSQL_HOST,
-      user: process.env.MYSQL_USER,
-      password: process.env.MYSQL_PASSWORD,
-      database: process.env.MYSQL_DB
-    });
-    await connection.query('SELECT 1');
-    await connection.end();
-    res.status(200).send('OK');
-  } catch (err) {
-    console.error('Health check failed:', err.message);
-    res.status(500).send('DB query failed');
-  }
-});
-
-
 // Debug route proxy
 app.get('/debug/env', async (req,res)=>{
   try {
@@ -317,7 +296,7 @@ app.get('/crash', (req, res) => {
   throw new Error('Test crash!');
 });
 
-
+app.get('/livez', (req, res) => res.status(200).send('Frontend is up'));
 
 // 404 & error handlers
 app.use((req,res)=>res.status(404).render('error',{ status:404,message:'الصفحة غير موجودة',layout:false }));
