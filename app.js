@@ -110,6 +110,7 @@ app.get('/', (req,res)=>res.render('home'));
 
 // Farmer → register
 app.get('/farmer/register', (req,res)=>res.render('farmer_register'));
+
 app.post('/farmer/register', async (req,res)=>{
   try {
     await axios.post(`${API}/farmer/register`, req.body);
@@ -117,7 +118,7 @@ app.post('/farmer/register', async (req,res)=>{
     res.redirect('/farmer/login');
   } catch(e) {
     console.error('Registration error:', e.response?.data || e.message);
-    req.flash('error', e.response?.data?.message||'خطأ في التسجيل');
+    req.flash('error', e.response?.data?.message || 'خطأ في التسجيل');
     res.redirect('/farmer/register');
   }
 });
@@ -218,14 +219,20 @@ app.post('/objection/new', async (req,res)=>{
 
 // Admin login & dashboard
 app.get('/admin/login',(req,res)=>res.render('admin_login'));
+
 app.post('/admin/login', async (req,res)=>{
   try {
     const { data } = await axios.post(`${API}/admin/login`, req.body);
-    req.session.token = data.token;
-    req.session.admin = true;
-    res.redirect('/admin/dashboard');
-  } catch {
-    req.flash('error','بيانات الدخول غير صحيحة');
+    if (data && data.token) {
+      req.session.token = data.token;
+      req.session.admin = true;
+      res.redirect('/admin/dashboard');
+    } else {
+      req.flash('error','بيانات غير كاملة');
+      res.redirect('/admin/login');
+    }
+  } catch (e) {
+    req.flash('error', e.response?.data?.message || 'بيانات الدخول غير صحيحة');
     res.redirect('/admin/login');
   }
 });
