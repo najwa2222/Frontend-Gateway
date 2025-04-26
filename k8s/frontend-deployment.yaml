@@ -34,11 +34,6 @@ spec:
             secretKeyRef:
               name: app-secret
               key: jwt-secret
-        - name: ADMIN_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: app-secret
-              key: admin-password
         - name: NODE_ENV
           value: "production"
         livenessProbe:
