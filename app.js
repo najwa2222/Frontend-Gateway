@@ -13,6 +13,20 @@ moment.locale('ar');
 
 const app = express();
 const API = process.env.API_URL;
+/**
+ * Fetch a paginated resource from your API and
+ * return { rows, page, totalPages, searchTerm }.
+ */
+async function fetchPaginated(req, path) {
+  const page  = parseInt(req.query.page)  || 1;
+  const search = req.query.search || '';
+  const { data } = await axios.get(`${API}${path}`, {
+    params: { page, search },
+    ...apiHeader(req)           // <-- spread your JWT header correctly
+  });
+  return data;                  // { rows, page, totalPages, searchTerm }
+}
+
 
 // — Security & Static —
 app.use(helmet({
@@ -232,38 +246,27 @@ app.post('/admin/login', async (req,res)=>{
 });
 
 // Admin dashboard (pending+reviewed)
-app.get('/admin/dashboard', async (req,res)=>{
+app.get('/admin/dashboard', async (req, res) => {
   if (!req.session.admin) return res.redirect('/admin/login');
-  const { page=1, search='' } = req.query;
   try {
-    const { data } = await axios.get(`${API}/admin/objections`, {
-      params: { page, search },
-      headers: { Authorization: `Bearer ${req.session.token}` }
-    });
-    res.render('admin_dashboard', {
-      rows: data.rows,
-      page: data.page,
-      totalPages: data.totalPages,
-      searchTerm: search
-    });
-  } catch {
-    req.flash('error','خطأ في تحميل البيانات');
+    const { rows, page, totalPages, searchTerm } = 
+        await fetchPaginated(req, '/admin/objections');
+    res.render('admin_dashboard', { rows, page, totalPages, searchTerm });
+  } catch (e) {
+    req.flash('error', 'خطأ في تحميل البيانات');
     res.redirect('/admin/login');
   }
 });
 
 // Admin archive (resolved)
-app.get('/admin/archive', async (req,res)=>{
+app.get('/admin/archive', async (req, res) => {
   if (!req.session.admin) return res.redirect('/admin/login');
-  const { page=1, search='' } = req.query;
   try {
-    const { data } = await axios.get(`${API}/admin/archive`, {
-      params: { page, search },
-      ...apiHeader(req)
-    });
-    res.render('admin_archive', data);
-  } catch {
-    req.flash('error','خطأ في تحميل بيانات الأرشيف');
+    const { rows, page, totalPages, searchTerm } = 
+        await fetchPaginated(req, '/admin/archive');
+    res.render('admin_archive', { rows, page, totalPages, searchTerm });
+  } catch (e) {
+    req.flash('error', 'خطأ في تحميل بيانات الأرشيف');
     res.redirect('/admin/dashboard');
   }
 });
