@@ -38,7 +38,7 @@ app.use(session({
   resave: true,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV==='production',
+    secure: false,
     maxAge: 3600000
   }
 }));
@@ -90,14 +90,6 @@ app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 
-
-// — Make locals available to all views —
-app.use((req,res,next)=>{
-  res.locals.flash = { success: req.flash('success'), error: req.flash('error') };
-  res.locals.session = req.session;
-  next();
-});
-
 // — Helper to add JWT header when calling API —
 function apiHeader(req) {
   return { headers: { Authorization: `Bearer ${req.session.token}` } };
@@ -132,8 +124,9 @@ app.post('/farmer/login', async (req,res)=>{
     req.session.farmerId = data.farmer.id;
     req.session.user = data.farmer;
     res.redirect('/farmer/dashboard');
-  } catch {
-    req.flash('error','بيانات غير صحيحة');
+  } catch (e) {
+    console.error('Login error:', e.response?.data || e.message);
+    req.flash('error', e.response?.data?.message || 'بيانات غير صحيحة');
     res.redirect('/farmer/login');
   }
 });
