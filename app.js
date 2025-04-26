@@ -253,7 +253,9 @@ app.get('/admin/dashboard', async (req, res) => {
         await fetchPaginated(req, '/admin/objections');
     res.render('admin_dashboard', { rows, page, totalPages, searchTerm });
   } catch (e) {
-    req.flash('error', 'خطأ في تحميل البيانات');
+    console.error('❌ /admin/dashboard error:', 
+    e.response?.status, e.response?.data, e.message);
+    req.flash('error','خطأ في تحميل البيانات');
     res.redirect('/admin/login');
   }
 });
