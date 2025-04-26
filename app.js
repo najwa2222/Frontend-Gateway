@@ -117,6 +117,7 @@ app.post('/farmer/register', async (req,res)=>{
 // Farmer → login
 app.get('/farmer/login', (req,res)=>res.render('farmer_login'));
 app.post('/farmer/login', async (req,res)=>{
+  console.log('▶️  [farmer/login] got body:', req.body);
   try {
     const { data } = await axios.post(`${API}/farmer/login`, req.body);
     req.session.token = data.token;
@@ -213,6 +214,7 @@ app.post('/objection/new', async (req,res)=>{
 app.get('/admin/login',(req,res)=>res.render('admin_login'));
 
 app.post('/admin/login', async (req,res)=>{
+  console.log('▶️  [admin/login] got body:', req.body);
   try {
     const { data } = await axios.post(`${API}/admin/login`, req.body);
     if (data && data.token) {
