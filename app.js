@@ -44,16 +44,6 @@ app.use(session({
 }));
 app.use(flash());
 
-app.use((req, res, next) => {
-  res.locals.session = req.session;
-  res.locals.flash = {
-    success: req.flash('success'),
-    error: req.flash('error')
-  };
-  next();
-});
-
-
 // — Handlebars & Helpers —
 const hbs = exphbs.create({
   extname: '.hbs',
@@ -94,6 +84,15 @@ app.set('views', path.join(__dirname, 'views'));
 function apiHeader(req) {
   return { headers: { Authorization: `Bearer ${req.session.token}` } };
 }
+
+app.use((req, res, next) => {
+  res.locals.session = req.session;
+  res.locals.flash = {
+    success: req.flash('success'),
+    error: req.flash('error')
+  };
+  next();
+});
 
 // — Routes —
 
