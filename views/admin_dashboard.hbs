@@ -1,23 +1,4 @@
-<div class="card shadow">
-  <div class="card-header bg-danger text-white">
-    <h3 class="mb-0"><i class="fas fa-user-shield me-2"></i> لوحة إدارة الاعتراضات</h3>
-  </div>
-
-  <div class="card-body">
-    <!-- Search Form -->
-    <form action="/admin/dashboard" method="GET" class="mb-4">
-      <div class="input-group">
-        <input type="text" name="search" class="form-control" placeholder="البحث برقم المعاملة..." value="{{searchTerm}}">
-        <button class="btn btn-primary" type="submit">
-          <i class="fas fa-search"></i> بحث
-        </button>
-        {{#if searchTerm}}
-        <a href="/admin/dashboard" class="btn btn-secondary">
-          <i class="fas fa-times"></i> إلغاء البحث
-        </a>
-        {{/if}}
-      </div>
-    </form>
+<div class="card-body">
 <div class="card shadow">
   <div class="card-header bg-danger text-white">
     <h3 class="mb-0"><i class="fas fa-user-shield me-2"></i> لوحة إدارة الاعتراضات</h3>
