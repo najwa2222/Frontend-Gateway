@@ -18,15 +18,22 @@ const API = process.env.API_URL;
  * return { rows, page, totalPages, searchTerm }.
  */
 async function fetchPaginated(req, path) {
-  const page  = parseInt(req.query.page)  || 1;
+  const page = parseInt(req.query.page) || 1;
   const search = req.query.search || '';
-  const { data } = await axios.get(`${API}${path}`, {
-    params: { page, search },
-    ...apiHeader(req)           // <-- spread your JWT header correctly
-  });
-  return data;                  // { rows, page, totalPages, searchTerm }
+  console.log(`Fetching ${path} with page=${page}, search="${search}"`);
+  
+  try {
+    const { data } = await axios.get(`${API}${path}`, {
+      params: { page, search },
+      ...apiHeader(req)
+    });
+    console.log(`Got response from ${path}:`, data);
+    return data;
+  } catch (error) {
+    console.error(`Error fetching ${path}:`, error.response?.data || error.message);
+    throw error;
+  }
 }
-
 
 // — Security & Static —
 app.use(helmet({
@@ -96,7 +103,13 @@ app.set('views', path.join(__dirname, 'views'));
 
 // — Helper to add JWT header when calling API —
 function apiHeader(req) {
-  return { headers: { Authorization: `Bearer ${req.session.token}` } };
+  const token = req.session.token;
+  console.log(`Using token: ${token ? 'Present' : 'Missing'}`);
+  return {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : '',
+    }
+  };
 }
 
 app.use((req, res, next) => {
