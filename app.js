@@ -250,6 +250,8 @@ app.get('/crda/admin/pending-accounts', async (req, res) => { if (!req.session.u
 app.post('/crda/admin/approve-account/:id', async (req, res) => { await crdaClient.post(`/admin/approve-account/${req.params.id}`, {}, { withCredentials: true }); res.redirect('/crda/admin/pending-accounts'); });
 app.post('/crda/admin/reject-account/:id', async (req, res) => { await crdaClient.post(`/admin/reject-account/${req.params.id}`, {}, { withCredentials: true }); res.redirect('/crda/admin/pending-accounts'); });
 
+app.get('/livez', (req, res) => res.status(200).send('Frontend is up'));
+
 app.use((req, res) => res.status(404).render('error', { status: 404, message: 'الصفحة غير موجودة', layout: false }));
 app.use((err, req, res, next) => { console.error(err); res.status(500).render('error', { status: 500, message: 'حدث خطأ غير متوقع', layout: false }); });
 
