@@ -17,22 +17,16 @@ const API = process.env.API_URL;
  * Fetch a paginated resource from your API and
  * return { rows, page, totalPages, searchTerm }.
  */
+// In your frontend fetchPaginated function
 async function fetchPaginated(req, path) {
   const page = parseInt(req.query.page) || 1;
-  const search = req.query.search || '';
-  console.log(`Fetching ${path} with page=${page}, search="${search}"`);
+  const search = (req.query.search || '').trim(); // Add .trim() to remove whitespace
   
-  try {
-    const { data } = await axios.get(`${API}${path}`, {
-      params: { page, search },
-      ...apiHeader(req)
-    });
-    console.log(`Got response from ${path}:`, data);
-    return data;
-  } catch (error) {
-    console.error(`Error fetching ${path}:`, error.response?.data || error.message);
-    throw error;
-  }
+  const { data } = await axios.get(`${API}${path}`, {
+    params: { page, search },
+    ...apiHeader(req)
+  });
+  return data;
 }
 
 // — Security & Static —
