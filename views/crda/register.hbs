@@ -1,0 +1,80 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">تسجيل موظف جديد</h1>
+    
+    {{#if error}}
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+      {{#if (eq error 'invalid_domain')}}
+        يُسمح فقط بالبريد الإلكتروني الرسمي (@crda.com)
+      {{else if (eq error 'missing_fields')}}
+        الرجاء تعبئة جميع الحقول المطلوبة
+      {{else if (eq error 'exists')}}
+        البريد الإلكتروني أو رقم الهوية موجود مسبقاً
+      {{/if}}
+    </div>
+    {{/if}}
+
+    <form action="/register" method="POST">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">البريد الإلكتروني</label>
+          <input type="email" name="email_user" 
+                 class="w-full px-3 py-2 border rounded" 
+                 placeholder="example@crda.com" required>
+          <p class="text-sm text-gray-500 mt-1">يجب أن يكون بريدًا مؤسسيًا (@crda.com)</p>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">كلمة المرور</label>
+          <input type="password" name="password_user" 
+                 class="w-full px-3 py-2 border rounded" required>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">اللقب</label>
+          <input type="text" name="nom_user" 
+                 class="w-full px-3 py-2 border rounded" required>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">الاسم</label>
+          <input type="text" name="prenom_user" 
+                 class="w-full px-3 py-2 border rounded" required>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">الجنس</label>
+          <select name="sex_user" class="w-full px-3 py-2 border rounded" required>
+            <option value="homme">ذكر</option>
+            <option value="femme">أنثى</option>
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">رقم الهوية</label>
+          <input type="text" name="cin_user" 
+                 class="w-full px-3 py-2 border rounded" required>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">الدور</label>
+          <select name="role_user" class="w-full px-3 py-2 border rounded" required>
+            <option value="chef_dentreprise">رئيس المؤسسة</option>
+            <option value="gerant">المسير</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <button type="submit" 
+                class="w-full bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded">
+          تسجيل الحساب
+        </button>
+      </div>
+    </form>
+
+    <p class="text-center text-gray-600 mt-4">
+      لديك حساب؟ <a href="/login" class="text-blue-500 hover:text-blue-800">سجل الدخول</a>
+    </p>
+  </div>
+</div>

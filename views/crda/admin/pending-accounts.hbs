@@ -1,0 +1,50 @@
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold text-gray-800 mb-6">الطلبات المعلقة</h1>
+
+  {{#if accounts.length}}
+  <div class="bg-white rounded-lg shadow overflow-x-auto">
+    <table class="min-w-full">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الاسم</th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">البريد الإلكتروني</th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الدور</th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الإجراءات</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        {{#each accounts}}
+        <tr>
+          <td class="px-6 py-4 whitespace-nowrap text-right">{{prenom_user}} {{nom_user}}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-right">{{email_user}}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-right">
+            {{#if (eq role_user 'chef_dentreprise')}}رئيس المؤسسة{{/if}}
+            {{#if (eq role_user 'gerant')}}مسير{{/if}}
+            </td>
+<!-- pendingaccounts.hbs -->
+<td class="px-6 py-4 whitespace-nowrap text-right">
+  <!-- Approval Form -->
+  <form action="/admin/approve-account/{{this.id}}" method="POST">
+    <button type="submit" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+      قبول
+    </button>
+  </form>
+
+  <!-- Rejection Form -->
+  <form action="/admin/reject-account/{{this.id}}" method="POST" class="inline ml-2">
+    <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+      رفض
+    </button>
+  </form>
+</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  {{else}}
+<div class="login-card animate-fade-in-up">
+    <h1 class="login-title animate-slide-in-right animate-delay-100">لا توجد طلبات معلقة حالياً</h1>    
+  </div>
+  {{/if}}
+</div>

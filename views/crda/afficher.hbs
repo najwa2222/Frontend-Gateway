@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://cdn.tailwindcss.com; script-src-attr 'none';">
+  <title>{{title}}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap');
+    body { font-family: 'Tajawal', sans-serif; }
+  </style>
+</head>
+
+<body class="bg-gray-50">
+<div class="container mx-auto p-4 lg:p-8">
+  <section class="bg-white rounded-2xl shadow-lg p-6 mx-auto max-w-9xl">
+    <div class="rounded-xl border border-gray-200">
+      <table class="w-full">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-4 text-right font-medium text-gray-700">الموضوع</th>
+            <th class="px-6 py-4 text-right font-medium text-gray-700">الاسم</th>
+            <th class="px-6 py-4 text-right font-medium text-gray-700">اللقب</th>
+            <th class="px-6 py-4 text-right font-medium text-gray-700">ب.ت.و</th>
+            <th class="px-6 py-4 text-right font-medium text-gray-700">رقم المعاملة</th>
+            <th class="px-6 py-4 text-right font-medium text-gray-700">شهادة ملكية</th>
+            <th class="px-6 py-4 text-right font-medium text-gray-700">بطاقة فلاح</th>
+            <th class="px-6 py-4 text-right font-medium text-gray-700">بطاقة وطنية</th>
+            <th class="px-6 py-4 text-right font-medium text-gray-700">مطلب الغرض</th>
+            <th class="px-6 py-4 text-right font-medium text-gray-700">عقد كراء</th>
+            <th class="px-6 py-4 text-right font-medium text-gray-700">وثائق أخرى</th>
+            <th class="px-6 py-4 text-right font-medium text-gray-700">الحالة</th>
+            <th class="px-6 py-4 text-right font-medium text-gray-700">الإجراءات</th>
+          </tr>
+        </thead>
+
+        <tbody class="divide-y divide-gray-200">
+          {{#each services}}
+          <tr class="hover:bg-gray-50 transition-colors" data-id="{{id}}">
+            <td class="px-6 py-4 font-medium text-gray-800">{{sujet}}</td>
+            <td class="px-6 py-4 text-gray-600">{{prenom}}</td>
+            <td class="px-6 py-4 text-gray-600">{{nom}}</td>
+            <td class="px-6 py-4 text-gray-600">{{cin}}</td>
+            <td class="px-6 py-4 text-gray-600">{{numero_transaction}}</td>
+
+            <td class="px-6 py-4 text-center"><input type="checkbox" disabled {{#if certificat_propriete_terre}}checked{{/if}} class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md"></td>
+            <td class="px-6 py-4 text-center"><input type="checkbox" disabled {{#if copie_piece_identite_fermier}}checked{{/if}} class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md"></td>
+            <td class="px-6 py-4 text-center"><input type="checkbox" disabled {{#if copie_piece_identite_nationale}}checked{{/if}} class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md"></td>
+            <td class="px-6 py-4 text-center"><input type="checkbox" disabled {{#if demande_but}}checked{{/if}} class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md"></td>
+            <td class="px-6 py-4 text-center"><input type="checkbox" disabled {{#if copie_contrat_location_terrain}}checked{{/if}} class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md"></td>
+            <td class="px-6 py-4 text-center"><input type="checkbox" disabled {{#if autres_documents}}checked{{/if}} class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md"></td>
+
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+                {{#if (eq status 'تم')}}bg-green-100 text-green-800{{else}}bg-yellow-100 text-yellow-800{{/if}}">
+                {{status}}
+              </span>
+            </td>
+
+            <td class="px-6 py-4">
+              <div class="flex flex-wrap gap-2">
+                <button class="edit-btn px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg" data-id="{{id}}">تعديل</button>
+                <button class="delete-btn px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg" data-id="{{id}}">حذف</button>
+              </div>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-30 backdrop-blur-sm">
+  <div class="flex items-center justify-center min-h-screen px-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl">
+      <div class="p-6 border-b border-gray-200">
+        <h3 class="text-2xl font-semibold text-gray-800">تعديل الطلب</h3>
+      </div>
+
+      <form id="editForm" class="p-6 space-y-6">
+        <input type="hidden" id="editId" name="id">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div><label class="block text-sm font-medium text-gray-700 mb-2">الموضوع</label><input type="text" id="editSujet" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-2">الاسم</label><input type="text" id="editPrenom" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-2">اللقب</label><input type="text" id="editNom" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-2">ب.ت.و</label><input type="text" id="editCin" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-2">رقم المعاملة</label><input type="text" id="editNumero" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></div>
+        </div>
+
+        <div class="pt-6 border-t border-gray-200">
+          <h4 class="text-lg font-medium text-gray-800 mb-4">الوثائق المرفقة</h4>
+          <div class="grid grid-cols-2 gap-4">
+            <label class="flex items-center p-4 bg-gray-50 rounded-lg"><input type="checkbox" id="editCertificat" class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md mr-3">شهادة ملكية الأرض فلاحية</label>
+            <label class="flex items-center p-4 bg-gray-50 rounded-lg"><input type="checkbox" id="editCopieFermier" class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md mr-3">نسخة من بطاقة فلاح</label>
+            <label class="flex items-center p-4 bg-gray-50 rounded-lg"><input type="checkbox" id="editCopieNationale" class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md mr-3">نسخة من بطاقة تعريف الوطنية</label>
+            <label class="flex items-center p-4 bg-gray-50 rounded-lg"><input type="checkbox" id="editDemandeBut" class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md mr-3">مطلب للغرض</label>
+            <label class="flex items-center p-4 bg-gray-50 rounded-lg"><input type="checkbox" id="editContratLocation" class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md mr-3">نسخة من عقد كراء الأرض</label>
+            <label class="flex items-center p-4 bg-gray-50 rounded-lg"><input type="checkbox" id="editAutresDocuments" class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md mr-3">وثائق أخرى</label>
+          </div>
+        </div>
+
+        <div class="pt-6 flex justify-end gap-4">
+          <button type="button" id="cancelEditBtn" class="px-6 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">إلغاء</button>
+          <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">حفظ التغييرات</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- JS Event Handlers -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // Edit button handler
+    document.querySelectorAll('.edit-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const id = button.dataset.id;
+        window.location.href = `/editservice/${id}`;
+      });
+    });
+
+    // Delete button handler
+    document.querySelectorAll('.delete-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const id = button.dataset.id;
+        if (confirm('هل أنت متأكد من رغبتك في حذف هذا السجل؟')) {
+          fetch(`/api/services/${id}`, { method: 'DELETE' })
+            .then(res => {
+              if (res.ok) location.reload();
+              else alert('فشل الحذف، يرجى المحاولة لاحقاً');
+            })
+            .catch(err => {
+              console.error('Delete error:', err);
+              alert('حدث خطأ أثناء عملية الحذف');
+            });
+        }
+      });
+    });
+
+    // Close modal
+    const cancelBtn = document.getElementById("cancelEditBtn");
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', () => {
+        document.getElementById("editModal").classList.add("hidden");
+      });
+    }
+  });
+</script>
+</body>
+</html>

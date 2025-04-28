@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/crda-style.css">
+    <link rel="stylesheet" href="/css/crda-styles.css">
+    <link rel="stylesheet" href="/css/crda-custom-styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <title>{{title}}</title>
+</head>
+
+<body class="flex flex-col min-h-screen" style="
+    background-image: linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.6)), url('../img/logo.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;">
+    
+    <nav class="bg-white shadow-lg backdrop-blur-sm bg-opacity-90">
+        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+            <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
+                <img class="h-20" src="/img/logo.png" alt="Logo" class="logo"></a>
+            </a>
+
+            <button data-collapse-toggle="navbar-default" type="button"
+                class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                aria-controls="navbar-default" aria-expanded="false">
+                <span class="sr-only">Open main menu</span>
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M1 1h15M1 7h15M1 13h15" />
+                </svg>
+            </button>
+            
+            <div class="hidden w-full md:block md:w-auto" id="navbar-default">
+                <ul class="flex font-bold">
+                    <li class="nav-item">
+                        <a href="/" class="text-black mx-4 relative" aria-current="page">الصفحة الرئسية</a>
+                    </li>
+                    <li>
+                    <a href="/check-status" class="text-black mx-4">التحقق من الحالة</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/about" class="text-black mx-4 relative">من نحن</a>
+                    </li>
+
+                    {{#if user}}
+      <!-- Chef Menu -->
+      {{#if (eq user.role_user 'chef_dentreprise')}}
+        <li><a href="/services" class="text-black mx-4">تسجيل معطيات</a></li>
+        <li><a href="/getservices" class="text-black mx-4">المحتوى</a></li>
+      {{/if}}
+
+      <!-- Gerant Menu -->
+      {{#if (eq user.role_user 'gerant')}}
+        <li><a href="/getreports" class="text-black mx-4">التقارير</a></li>
+        <li><a href="/report" class="text-black mx-4">إنشاء تقرير</a></li>
+      {{/if}}
+
+      <!-- Directeur Menu -->
+      {{#if (eq user.role_user 'directeur')}}
+        <li><a href="/results" class="text-black mx-4">النتائج</a></li>
+        <li><a href="/admin/pending-accounts" class="text-black mx-4">الحسابات المعلقة</a></li>
+      {{/if}}
+
+      <!-- Shared Menu Items -->
+      <li><a href="/logout" class="text-black mx-4">تسجيل الخروج</a></li>
+    {{/if}}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="flex-grow">
+        {{{body}}}
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-auto">
+        <div class="max-w-screen-xl mx-auto py-8 px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">عن المنصة</h3>
+                    <p class="text-gray-400">
+                        منصة إلكترونية تابعة للوكالة الفلاحية ب توزر لتسهيل الإجراءات الإدارية والوثائق الفلاحية
+                    </p>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold mb-4">اتصل بنا</h3>
+                    <ul class="text-gray-400 space-y-2">
+                        <li>العنوان: توزر، تونس</li>
+                        <li>الهاتف: 76 330 000</li>
+                        <li>البريد: contact@crda-touzeur.tn</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold mb-4">روابط سريعة</h3>
+                    <ul class="text-gray-400 space-y-2">
+                        <li><a href="/services" class="hover:text-white">تسجيل معطيات</a></li>
+                        <li><a href="/getservices" class="hover:text-white">المحتوى</a></li>
+                        <li><a href="/results" class="hover:text-white">النتائج النهائية</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-4 text-center text-gray-400">
+                <p>© 2024 الوكالة الفلاحية بتوزر. جميع الحقوق محفوظة</p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

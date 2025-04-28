@@ -1,0 +1,173 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+
+body {
+  font-family: "Tajawal", sans-serif;
+}
+
+
+
+
+.tajawal-extralight {
+  font-family: "Tajawal", sans-serif;
+  font-weight: 200;
+  font-style: normal;
+}
+
+.tajawal-light {
+  font-family: "Tajawal", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.tajawal-regular {
+  font-family: "Tajawal", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.tajawal-medium {
+  font-family: "Tajawal", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.tajawal-bold {
+  font-family: "Tajawal", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.tajawal-extrabold {
+  font-family: "Tajawal", sans-serif;
+  font-weight: 800;
+  font-style: normal;
+}
+
+.tajawal-black {
+  font-family: "Tajawal", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 1400px;
+  height: 600px;
+  border: 2px solid black;
+  padding: 30px;
+  background-color: rgb(243, 234, 234);
+  border-radius: 0.25rem;
+  color: black;
+  margin: 27px auto;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-container p {
+  text-align: center;
+}
+
+.title-container {
+  text-align: center;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.body {
+  margin-top: 10px;
+}
+
+/* Centrer le titre */
+.title {
+  text-align: center;
+}
+.button-container input[type="button"] {
+  margin: 0 30px;
+}
+
+.form-group {
+  margin-bottom: 10px;
+}
+
+.button-row {
+  margin-top: 20px;
+}
+
+.mt-10 {
+  margin-top: -0.5rem;
+}
+
+.me-2 {
+  margin-inline-end: 10.5rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+  text-align: center;
+}
+
+.button-row input[type="submit"],
+.button-row input[type="reset"] {
+  margin-right: 23;
+}
+
+.checkbox {
+  color: red;
+}
+
+.well {
+  min-width: 250px;
+}
+
+.w-full {
+  width: 61%;
+}
+
+.checklist .checkbox {
+  position: relative;
+  display: block;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.checklist .checkbox+.checkbox {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.checklist {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.checklist .col-xs-6 {
+  width: 50%;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  font-size: 350%;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
+  margin: 0px;
+  padding: 0px;
+}

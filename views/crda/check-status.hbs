@@ -1,0 +1,78 @@
+<section class="min-h-screen bg-gray-50 py-12 px-4">
+  <div class="max-w-2xl mx-auto animate-fade-in-up">
+    <div class="bg-white rounded-xl shadow-lg p-8">
+      <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">
+        <i class="fas fa-search mr-2"></i>التحقق من حالة الملف
+      </h2>
+
+      {{#unless result}}
+      <form method="POST" class="space-y-6" id="statusForm">
+        <div class="input-group">
+          <label class="block text-gray-700 mb-2">رقم ب.ت.و</label>
+          <input 
+            type="text" 
+            name="cin" 
+            class="form-input"
+            placeholder="أدخل رقم البطاقة الوطنية"
+            required
+            value="{{#if error}}{{formData.cin}}{{/if}}"
+          >
+        </div>
+
+        <div class="input-group">
+          <label class="block text-gray-700 mb-2">رقم المعاملة</label>
+          <input 
+            type="text" 
+            name="transaction_number" 
+            class="form-input"
+            placeholder="أدخل رقم المعاملة"
+            required
+            value="{{#if error}}{{formData.transaction_number}}{{/if}}"
+          >
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all">
+          التحقق من الحالة
+        </button>
+      </form>
+      {{/unless}}
+
+      {{#if error}}
+        <div class="mt-6 p-4 bg-red-50 text-red-700 rounded-lg animate-shake">
+          <i class="fas fa-exclamation-circle mr-2"></i>{{error}}
+        </div>
+      {{/if}}
+
+      {{#if result}}
+        <div class="mt-8 bg-gray-50 rounded-xl p-6 animate-scale-in">
+          <h3 class="text-xl font-bold mb-4">تفاصيل الحالة:</h3>
+          <div class="space-y-4">
+            <div class="flex justify-between">
+              <span class="text-gray-600">الاسم:</span>
+              <span class="font-medium">{{result.prenom}} {{result.nom}}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">رقم المعاملة:</span>
+              <span class="font-medium">{{result.numero_transaction}}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">الحالة:</span>
+              <span class="font-medium 
+                {{#if (eq result.statut 'مقبول')}}text-green-600
+                {{else if (eq result.statut 'في انتظار التقرير')}}text-yellow-600
+                {{else if (eq result.statut 'بصدد الدرس')}}text-blue-600
+                {{else}}text-red-600{{/if}}">
+                {{result.statut}}
+              </span>
+            </div>
+          </div>
+          <div class="mt-6 text-center">
+            <a href="/check-status" class="text-blue-600 hover:underline">
+              <i class="fas fa-redo mr-2"></i>بحث جديد
+            </a>
+          </div>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+</section>

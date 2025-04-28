@@ -1,0 +1,495 @@
+/* ================ Base Styles ================ */
+:root {
+  --primary-color: #2563eb;
+  --secondary-color: #3b82f6;
+  --accent-color: #60a5fa;
+  --text-color: #1f2937;
+  --bg-color: #f8fafc;
+  --border-color: #e5e7eb;
+  --error-color: #dc2626;
+  --success-color: #16a34a;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Tajawal', sans-serif;
+  direction: rtl;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================ Login Page Styles ================ */
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), 
+              url('/img/logo.jpg') center/cover fixed;
+}
+
+.login-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 28rem;
+  padding: 2.5rem;
+  margin: 1rem;
+}
+
+.login-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.login-form .input-group {
+  margin-bottom: 1.5rem;
+}
+
+.login-form label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 0.875rem;
+  border: 2px solid var(--border-color);
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.remember-forgot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1.5rem 0;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-group input {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--border-color);
+  border-radius: 0.375rem;
+  accent-color: var(--primary-color);
+}
+
+.forgot-password {
+  color: var(--primary-color);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+  color: var(--secondary-color);
+}
+
+.login-button {
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2);
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.register-link a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.register-link a:hover {
+  color: var(--secondary-color);
+}
+
+/* ================ Animations ================ */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+}
+
+/* ================ Loading Spinner ================ */
+.loading-spinner {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ================ Animation Keyframes ================ */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ================ Animation Classes ================ */
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.6s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+.animate-bounce {
+  animation: bounce 1.5s infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-delay-100 {
+  animation-delay: 100ms;
+}
+
+.animate-delay-200 {
+  animation-delay: 200ms;
+}
+
+/* ================ Login Page Animations ================ */
+.login-container {
+  animation: fade-in-up 0.8s ease-out;
+}
+
+.login-card {
+  animation: scale-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.input-group {
+  animation: slide-in-right 0.5s ease-out forwards;
+  opacity: 0;
+  animation-delay: 300ms;
+}
+
+.login-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.login-button:hover {
+  transform: translateY(-2px);
+}
+
+.login-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+
+.login-button:active::after {
+  animation: ripple 0.6s ease-out;
+}
+
+/* ================ Hover Effects ================ */
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.03);
+}
+
+.hover-underline {
+  position: relative;
+}
+
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary-color);
+  transition: width 0.3s ease;
+}
+
+.hover-underline:hover::after {
+  width: 100%;
+}
+
+/* ================ Transitions ================ */
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.transition-colors {
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.transition-transform {
+  transition: transform 0.3s;
+}
+
+/* Add to existing login form styles */
+.login-form input {
+  transition: all 0.3s ease;
+}
+
+.login-form input:focus {
+  transform: scale(1.02);
+}
+
+.forgot-password {
+  transition: all 0.3s ease;
+}
+
+.register-link a {
+  transition: all 0.3s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(10px); }
+  75% { transform: translateX(-10px); }
+}
+
+.input-error {
+  animation: shake 0.4s ease-in-out;
+  border-color: var(--error-color);
+}
+@keyframes celebrate {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.success-message {
+  animation: celebrate 0.6s ease;
+}
+
+/* ================ Page-Specific Animations ================ */
+/* Home Page Animations */
+.home-hero-title {
+  animation: slide-in-right 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.home-feature-card {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.floating-illustration {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* About Page Animations */
+.about-section {
+  opacity: 0;
+  transform: translateX(30px);
+  animation: slide-in-right 0.6s ease-out forwards;
+}
+
+.staggered-animation:nth-child(1) { animation-delay: 200ms; }
+.staggered-animation:nth-child(2) { animation-delay: 400ms; }
+.staggered-animation:nth-child(3) { animation-delay: 600ms; }
+
+@keyframes highlight {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+.highlight-text {
+  background: linear-gradient(90deg, 
+    var(--primary-color), 
+    #fff, 
+    var(--primary-color)
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: highlight 6s linear infinite;
+}
+
+/* ================ Card Animations ================ */
+.hover-card {
+  transition: all 0.3s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-10px) rotate(1deg);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+/* ================ Section Transitions ================ */
+.section-transition {
+  view-timeline-name: --section;
+  view-timeline-axis: block;
+  animation-timeline: --section;
+  animation-name: fade-in-up;
+  animation-range: entry 20% cover 30%;
+  animation-fill-mode: both;
+}
+
+/* Status Check Specific Styles */
+.status-card {
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+@keyframes status-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.status-card:hover {
+  animation: status-pulse 2s infinite;
+}
+
+.status-icon {
+  filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.2));
+}
+
+/* Shake Animation for Errors */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(10px); }
+  75% { transform: translateX(-10px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+/* Add to custom-styles.css */
+.submit-btn {
+  background-color: #2563eb !important; /* Blue-600 */
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #1d4ed8 !important; /* Blue-700 */
+  transform: translateY(-1px);
+}

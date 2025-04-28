@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="script-src-attr 'unsafe-inline';  default-src 'self';
+  script-src 'self' https://cdn.tailwindcss.com 'unsafe-inline';
+  style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
+  font-src 'self' https://fonts.gstatic.com;
+">
+
+  <title>{{title}}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap');
+    body { font-family: 'Tajawal', sans-serif; }
+  </style>
+</head>
+
+<body class="bg-gray-50">
+<div class="container mx-auto p-4 lg:p-8">
+  <section class="bg-white rounded-2xl shadow-lg p-6 mx-auto max-w-3xl">
+    <form method="post" action="{{#unless isViewing}}/addreport{{/unless}}" class="space-y-6">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800">
+          {{#if isViewing}}عرض التقرير{{else}}إنشاء تقرير{{/if}}
+        </h2>
+        {{#if (eq user.role_user 'gerant')}}
+        <a href="/getreports"
+           class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors">
+          {{#if isViewing}}عودة{{else}}الغاء{{/if}}
+        </a>
+        {{/if}}
+          {{#if (eq user.role_user 'directeur')}}
+          <a href="/results"
+           class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors">
+          {{#if isViewing}}عودة{{else}}الغاء{{/if}}
+        </a>
+          {{/if}}
+      </div>
+
+      <!-- Service Information (Auto-filled and Read-only) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">الاسم</label>
+          <input type="text" name="nom" value="{{#if isViewing}}{{report.nom}}{{else}}{{nom}}{{/if}}"
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100" readonly>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">اللقب</label>
+          <input type="text" name="prenom" value="{{#if isViewing}}{{report.prenom}}{{else}}{{prenom}}{{/if}}"
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100" readonly>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">ب.ت.و</label>
+          <input type="text" name="cin" value="{{#if isViewing}}{{report.cin}}{{else}}{{cin}}{{/if}}"
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100" readonly>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">الموضوع</label>
+          <input type="text" name="sujet" value="{{#if isViewing}}{{report.sujet}}{{else}}{{sujet}}{{/if}}"
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100" readonly>
+        </div>
+      </div>
+
+      <!-- Report Fields (Editable in Create Mode) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">المساحة (م²)</label>
+          <input type="number" name="surface" value="{{report.surface}}"
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg {{#if isViewing}}bg-gray-100{{/if}}"
+                 {{#if isViewing}}readonly{{else}}required{{/if}}>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">حدود قطعة الأرض</label>
+          <input type="text" name="limites_terrain" value="{{report.limites_terrain}}"
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg {{#if isViewing}}bg-gray-100{{/if}}"
+                 {{#if isViewing}}readonly{{else}}required{{/if}}>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">الموقع</label>
+          <input type="text" name="localisation" value="{{report.localisation}}"
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg {{#if isViewing}}bg-gray-100{{/if}}"
+                 {{#if isViewing}}readonly{{else}}required{{/if}}>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">مساحة البناءات القديمة (م²)</label>
+          <input type="number" name="superficie_batiments_anciens" value="{{report.superficie_batiments_anciens}}"
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg {{#if isViewing}}bg-gray-100{{/if}}"
+                 {{#if isViewing}}readonly{{else}}required{{/if}}>
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2">الملاحظات</label>
+          <textarea name="observations"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg {{#if isViewing}}bg-gray-100{{/if}}"
+                    {{#if isViewing}}readonly{{/if}} rows="4">{{report.observations}}</textarea>
+        </div>
+      </div>
+
+      <!-- Form Footer -->
+      <div class="border-t pt-6">
+        {{#unless isViewing}}
+        <button type="submit" 
+                class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+          حفظ التقرير
+        </button>
+        {{/unless}}
+      </div>
+    </form>
+  </section>
+</div>
+
+<!-- Auto-fill Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Auto-fill service information in create mode
+    if (!{{isViewing}}) {
+      const params = new URLSearchParams(window.location.search);
+      ['cin', 'sujet', 'prenom', 'nom'].forEach(param => {
+        const field = document.querySelector(`[name="${param}"]`);
+        if (field) field.value = params.get(param) || '';
+      });
+    }
+  });
+</script>
+</body>
+</html>

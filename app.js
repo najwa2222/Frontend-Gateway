@@ -1,68 +1,62 @@
-// frontend‑service/app.js
 require('dotenv').config();
-const express       = require('express');
-const helmet        = require('helmet');
-const session       = require('express-session');
-const flash         = require('connect-flash');
-const bodyParser    = require('body-parser');
-const path          = require('path');
-const exphbs        = require('express-handlebars');
-const axios         = require('axios');
-const moment        = require('moment');
+const express = require('express');
+const helmet = require('helmet');
+const session = require('express-session');
+const flash = require('connect-flash');
+const bodyParser = require('body-parser');
+const path = require('path');
+const exphbs = require('express-handlebars');
+const axios = require('axios');
+const moment = require('moment');
+
 moment.locale('ar');
-
 const app = express();
-const API = process.env.API_URL;
-/**
- * Fetch a paginated resource from your API and
- * return { rows, page, totalPages, searchTerm }.
- */
-// In your frontend fetchPaginated function
-async function fetchPaginated(req, path) {
-  const page = parseInt(req.query.page) || 1;
-  const search = (req.query.search || '').trim(); // Add .trim() to remove whitespace
-  
-  const { data } = await axios.get(`${API}${path}`, {
-    params: { page, search },
-    ...apiHeader(req)
-  });
-  return data;
-}
 
-// — Security & Static —
+const PORT = process.env.PORT;
+const CRDA_API = process.env.CRDA_API_URL;
+const OBJECTION_API = process.env.OBJECTION_API_URL;
+
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc:  ["'self'", 'cdnjs.cloudflare.com','cdn.jsdelivr.net'],
-      styleSrc:   ["'self'", 'fonts.googleapis.com','cdn.jsdelivr.net','cdnjs.cloudflare.com',"'unsafe-inline'"],
-      fontSrc:    ["'self'", 'fonts.gstatic.com','cdnjs.cloudflare.com'],
-      imgSrc:     ["'self'", 'data:']
+      scriptSrc: ["'self'", 'cdnjs.cloudflare.com', 'cdn.jsdelivr.net'],
+      styleSrc: ["'self'", 'fonts.googleapis.com', 'cdn.jsdelivr.net', 'cdnjs.cloudflare.com', "'unsafe-inline'"],
+      fontSrc: ["'self'", 'fonts.gstatic.com', 'cdnjs.cloudflare.com'],
+      imgSrc: ["'self'", 'data:']
     }
   }
 }));
+
 app.use('/css', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/css')));
-app.use('/js',  express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js')));
+app.use('/js', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
-// — Sessions & Flash —
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'keyboard cat',
+  secret: process.env.SESSION_SECRET,
   resave: true,
   saveUninitialized: false,
-  cookie: {
-    secure: false,
-    maxAge: 3600000
-  }
+  cookie: { secure: false, maxAge: 3600000 }
 }));
 app.use(flash());
 
-// — Handlebars & Helpers —
-const hbs = exphbs.create({
+app.use((req, res, next) => {
+  if (req.path.startsWith('/crda')) {
+    res.locals.layout = 'crda_main';
+  } else if (req.path.startsWith('/objection')) {
+    res.locals.layout = 'objection_main';
+  } else {
+    res.locals.layout = 'main';
+  }
+  next();
+});
+
+app.engine('.hbs', exphbs.create({
   extname: '.hbs',
-  defaultLayout: 'main',
+  layoutsDir: path.join(__dirname, 'views', 'layouts'),
+  defaultLayout: false,
   helpers: {
     eq: (a, b) => a == b,
     range: (start, end) => {
@@ -71,7 +65,7 @@ const hbs = exphbs.create({
       return result;
     },
     formatDate: d => d ? moment(d).format('YYYY-MM-DD HH:mm') : '',
-    getBadgeClass: (status) => {
+    getBadgeClass: status => {
       switch (status) {
         case 'pending': return 'warning';
         case 'reviewed': return 'info';
@@ -79,32 +73,19 @@ const hbs = exphbs.create({
         default: return 'secondary';
       }
     },
-    arStatus: (status) => {
-      const map = {
-        pending: 'قيد الانتظار',
-        reviewed: 'قيد المراجعة',
-        resolved: 'تم الحل'
-      };
-      return map[status] || status;
-    },
-    json: obj => JSON.stringify(obj, null, 2) // for debugging
+    arStatus: status => ({
+      pending: 'قيد الانتظار',
+      reviewed: 'قيد المراجعة',
+      resolved: 'تم الحل'
+    }[status] || status),
+    json: obj => JSON.stringify(obj, null, 2)
   }
-});
-
-app.engine('hbs', hbs.engine);
-app.set('view engine', 'hbs');
+}).engine);
+app.set('view engine', '.hbs');
 app.set('views', path.join(__dirname, 'views'));
 
-// — Helper to add JWT header when calling API —
-function apiHeader(req) {
-  const token = req.session.token;
-  console.log(`Using token: ${token ? 'Present' : 'Missing'}`);
-  return {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : '',
-    }
-  };
-}
+const crdaClient = axios.create({ baseURL: CRDA_API, withCredentials: true });
+const objectionClient = axios.create({ baseURL: OBJECTION_API, withCredentials: true });
 
 app.use((req, res, next) => {
   res.locals.session = req.session;
@@ -115,208 +96,161 @@ app.use((req, res, next) => {
   next();
 });
 
-// — Routes —
+async function fetchPaginated(req, path, client) {
+  const page = parseInt(req.query.page) || 1;
+  const search = (req.query.search || '').trim();
+  const { data } = await client.get(path, { params: { page, search } });
+  return data;
+}
 
-// Home
-app.get('/', (req,res)=>res.render('home'));
+app.get('/', (req, res) => res.redirect('/crda'));
 
-// Farmer → register
-app.get('/farmer/register', (req,res)=>res.render('farmer_register'));
-
-app.post('/farmer/register', async (req,res)=>{
+// Objection UI
+app.get('/objection', (req, res) => res.render('objection/home'));
+app.get('/objection/farmer/register', (req, res) => res.render('objection/farmer_register'));
+app.post('/objection/farmer/register', async (req, res) => {
   try {
-    await axios.post(`${API}/farmer/register`, req.body);
-    req.flash('success','تم التسجيل بنجاح');
-    res.redirect('/farmer/login');
-  } catch(e) {
-    console.error('Registration error:', e.response?.data || e.message);
-    req.flash('error', e.response?.data?.message || 'خطأ في التسجيل');
-    res.redirect('/farmer/register');
+    await objectionClient.post('/farmer/register', req.body);
+    req.flash('success', 'تم التسجيل بنجاح');
+    res.redirect('/objection/farmer/login');
+  } catch {
+    req.flash('error', 'خطأ في التسجيل');
+    res.redirect('/objection/farmer/register');
   }
 });
-
-// Farmer → login
-app.get('/farmer/login', (req,res)=>res.render('farmer_login'));
-app.post('/farmer/login', async (req,res)=>{
-  console.log('▶️  [farmer/login] got body:', req.body);
+app.get('/objection/farmer/login', (req, res) => res.render('objection/farmer_login'));
+app.post('/objection/farmer/login', async (req, res) => {
   try {
-    const { data } = await axios.post(`${API}/farmer/login`, req.body);
+    const { data } = await objectionClient.post('/farmer/login', req.body);
     req.session.token = data.token;
-    req.session.farmerId = data.farmer.id;
     req.session.user = data.farmer;
-    res.redirect('/farmer/dashboard');
-  } catch (e) {
-    console.error('Login error:', e.response?.data || e.message);
-    req.flash('error', e.response?.data?.message || 'بيانات غير صحيحة');
-    res.redirect('/farmer/login');
+    res.redirect('/objection/farmer/dashboard');
+  } catch {
+    req.flash('error', 'بيانات غير صحيحة');
+    res.redirect('/objection/farmer/login');
   }
 });
-
-// Forgot password
-app.get('/farmer/forgot-password',(req,res)=>res.render('forgot_password'));
-app.post('/farmer/forgot-password', async (req,res)=>{
+app.get('/objection/farmer/forgot-password', (req, res) => res.render('objection/forgot_password'));
+app.post('/objection/farmer/forgot-password', async (req, res) => {
   try {
-    const { data } = await axios.post(`${API}/farmer/forgot-password`, req.body);
-    // store reset_token in session for next step
+    const { data } = await objectionClient.post('/farmer/forgot-password', req.body);
     req.session.reset_token = data.reset_token;
     req.session.national_id = req.body.national_id;
-    res.redirect('/farmer/verify-code');
+    res.redirect('/objection/farmer/verify-code');
   } catch {
-    req.flash('error','لم يتم العثور على مزارع بهذه البيانات');
-    res.redirect('/farmer/forgot-password');
+    req.flash('error', 'لم يتم العثور على مزارع بهذه البيانات');
+    res.redirect('/objection/farmer/forgot-password');
   }
 });
-
-// Verify code
-app.get('/farmer/verify-code',(req,res)=> {
-  res.render('verify_code',{ national_id: req.session.national_id });
-});
-app.post('/farmer/verify-code', async (req,res)=>{
+app.get('/objection/farmer/verify-code', (req, res) => res.render('objection/verify_code', { national_id: req.session.national_id }));
+app.post('/objection/farmer/verify-code', async (req, res) => {
   try {
-    const code = req.body.code1+req.body.code2+req.body.code3+req.body.code4+req.body.code5+req.body.code6;
-    await axios.post(`${API}/farmer/verify-code`, {
-      national_id: req.session.national_id,
-      verification_code: code
-    });
-    res.redirect('/farmer/reset-password');
+    const code = [req.body.code1, req.body.code2, req.body.code3, req.body.code4, req.body.code5, req.body.code6].join('');
+    await objectionClient.post('/farmer/verify-code', { national_id: req.session.national_id, verification_code: code });
+    res.redirect('/objection/farmer/reset-password');
   } catch {
-    req.flash('error','رمز التحقق غير صحيح أو منتهي الصلاحية');
-    res.redirect('/farmer/verify-code');
+    req.flash('error', 'رمز التحقق غير صحيح أو منتهي الصلاحية');
+    res.redirect('/objection/farmer/verify-code');
   }
 });
-
-// Reset password
-app.get('/farmer/reset-password',(req,res)=> {
-  res.render('reset_password',{ national_id: req.session.national_id, reset_token: req.session.reset_token });
-});
-app.post('/farmer/reset-password', async (req,res)=>{
+app.get('/objection/farmer/reset-password', (req, res) => res.render('objection/reset_password', { national_id: req.session.national_id, reset_token: req.session.reset_token }));
+app.post('/objection/farmer/reset-password', async (req, res) => {
   try {
-    await axios.post(`${API}/farmer/reset-password`, {
-      national_id: req.body.national_id,
-      reset_token: req.body.reset_token,
-      password: req.body.password
-    });
-    req.flash('success','تم تغيير كلمة المرور بنجاح');
-    res.redirect('/farmer/login');
+    await objectionClient.post('/farmer/reset-password', { national_id: req.body.national_id, reset_token: req.body.reset_token, password: req.body.password });
+    req.flash('success', 'تم تغيير كلمة المرور بنجاح');
+    res.redirect('/objection/farmer/login');
   } catch {
-    req.flash('error','حدث خطأ في إعادة التعيين');
-    res.redirect('/farmer/reset-password');
+    req.flash('error', 'حدث خطأ في إعادة التعيين');
+    res.redirect('/objection/farmer/reset-password');
   }
 });
-
-// Farmer dashboard & new objection
-app.get('/farmer/dashboard', async (req,res)=>{
-  if (!req.session.token) return res.redirect('/farmer/login');
+app.get('/objection/farmer/dashboard', async (req, res) => {
+  if (!req.session.token) return res.redirect('/objection/farmer/login');
   try {
-    const { data: objections } = await axios.get(`${API}/objection`, apiHeader(req));
-    const { data: eligibility } = await axios.get(`${API}/objection/can-submit`, apiHeader(req));
-    res.render('farmer_dashboard',{ objections, canSubmitNewObjection: eligibility.canSubmit });
+    const { data: objections } = await objectionClient.get('/objection', { headers: { Authorization: `Bearer ${req.session.token}` } });
+    const { data: eligibility } = await objectionClient.get('/objection/can-submit', { headers: { Authorization: `Bearer ${req.session.token}` } });
+    res.render('objection/farmer_dashboard', { objections, canSubmitNewObjection: eligibility.canSubmit });
   } catch {
-    req.flash('error','خطأ في تحميل البيانات');
-    res.redirect('/');
+    req.flash('error', 'خطأ في تحميل البيانات');
+    res.redirect('/objection');
   }
 });
-app.get('/objection/new', (req,res)=>{
-  if (!req.session.token) return res.redirect('/farmer/login');
-  res.render('objection_new');
-});
-app.post('/objection/new', async (req,res)=>{
+app.get('/objection/objection/new', (req, res) => { if (!req.session.token) return res.redirect('/objection/farmer/login'); res.render('objection/objection_new'); });
+app.post('/objection/objection/new', async (req, res) => {
   try {
-    await axios.post(`${API}/objection`, req.body, apiHeader(req));
-    req.flash('success','تم تقديم الاعتراض بنجاح');
-    res.redirect('/farmer/dashboard');
+    await objectionClient.post('/objection', req.body, { headers: { Authorization: `Bearer ${req.session.token}` } });
+    req.flash('success', 'تم تقديم الاعتراض بنجاح');
+    res.redirect('/objection/farmer/dashboard');
   } catch {
-    req.flash('error','خطأ في تقديم الاعتراض');
-    res.redirect('/objection/new');
+    req.flash('error', 'خطأ في تقديم الاعتراض');
+    res.redirect('/objection/objection/new');
   }
 });
-
-// Admin login & dashboard
-app.get('/admin/login',(req,res)=>res.render('admin_login'));
-
-app.post('/admin/login', async (req,res)=>{
-  console.log('▶️  [admin/login] got body:', req.body);
+app.get('/objection/admin/login', (req, res) => res.render('objection/admin_login'));
+app.post('/objection/admin/login', async (req, res) => {
   try {
-    const { data } = await axios.post(`${API}/admin/login`, req.body);
-    if (data && data.token) {
-      req.session.token = data.token;
-      req.session.admin = true;
-      res.redirect('/admin/dashboard');
-    } else {
-      req.flash('error','بيانات غير كاملة');
-      res.redirect('/admin/login');
-    }
-  } catch (e) {
-    req.flash('error', e.response?.data?.message || 'بيانات الدخول غير صحيحة');
-    res.redirect('/admin/login');
-  }
-});
-
-// Admin dashboard (pending+reviewed)
-app.get('/admin/dashboard', async (req, res) => {
-  if (!req.session.admin) return res.redirect('/admin/login');
-  try {
-    const { rows, page, totalPages, searchTerm } = 
-        await fetchPaginated(req, '/admin/objections');
-    res.render('admin_dashboard', { rows, page, totalPages, searchTerm });
-  } catch (e) {
-    console.error('❌ /admin/dashboard error:', 
-    e.response?.status, e.response?.data, e.message);
-    req.flash('error','خطأ في تحميل البيانات');
-    res.redirect('/admin/login');
-  }
-});
-
-// Admin archive (resolved)
-app.get('/admin/archive', async (req, res) => {
-  if (!req.session.admin) return res.redirect('/admin/login');
-  try {
-    const { rows, page, totalPages, searchTerm } = 
-        await fetchPaginated(req, '/admin/archive');
-    res.render('admin_archive', { rows, page, totalPages, searchTerm });
-  } catch (e) {
-    req.flash('error', 'خطأ في تحميل بيانات الأرشيف');
-    res.redirect('/admin/dashboard');
-  }
-});
-
-// Admin review / resolve
-app.post('/admin/objection/:id/review', async (req,res)=>{
-  await axios.post(`${API}/admin/objection/${req.params.id}/review`,{}, apiHeader(req));
-  res.redirect('/admin/dashboard');
-});
-app.post('/admin/objection/:id/resolve', async (req,res)=>{
-  await axios.post(`${API}/admin/objection/${req.params.id}/resolve`,{}, apiHeader(req));
-  res.redirect('/admin/dashboard');
-});
-
-// Logout routes
-app.get('/farmer/logout',(req,res)=> req.session.destroy(()=>res.redirect('/')));
-app.get('/admin/logout',(req,res)=>  req.session.destroy(()=>res.redirect('/')));
-
-
-// Debug route proxy
-app.get('/debug/env', async (req,res)=>{
-  try {
-    const { data } = await axios.get(`${API}/debug/env`);
-    res.json(data);
+    const { data } = await objectionClient.post('/admin/login', req.body);
+    req.session.token = data.token;
+    req.session.admin = true;
+    res.redirect('/objection/admin/dashboard');
   } catch {
-    res.status(404).send('Not available');
+    req.flash('error', 'بيانات الدخول غير صحيحة');
+    res.redirect('/objection/admin/login');
   }
 });
-
-app.get('/crash', (req, res) => {
-  throw new Error('Test crash!');
+app.get('/objection/admin/dashboard', async (req, res) => {
+  if (!req.session.admin) return res.redirect('/objection/admin/login');
+  try {
+    const { rows, page, totalPages, searchTerm } = await fetchPaginated(req, '/admin/objections', objectionClient);
+    res.render('objection/admin_dashboard', { rows, page, totalPages, searchTerm });
+  } catch {
+    req.flash('error', 'خطأ في تحميل البيانات');
+    res.redirect('/objection/admin/login');
+  }
 });
-
-app.get('/livez', (req, res) => res.status(200).send('Frontend is up'));
-
-// 404 & error handlers
-app.use((req,res)=>res.status(404).render('error',{ status:404,message:'الصفحة غير موجودة',layout:false }));
-app.use((err,req,res,next)=>{
-  console.error(err);
-  res.status(500).render('error',{ status:500,message:'حدث خطأ غير متوقع',layout:false });
+app.get('/objection/admin/archive', async (req, res) => {
+  if (!req.session.admin) return res.redirect('/objection/admin/login');
+  try {
+    const { rows, page, totalPages, searchTerm } = await fetchPaginated(req, '/admin/archive', objectionClient);
+    res.render('objection/admin_archive', { rows, page, totalPages, searchTerm });
+  } catch {
+    req.flash('error', 'خطأ في تحميل الأرشيف');
+    res.redirect('/objection/admin/dashboard');
+  }
 });
+app.post('/objection/admin/objection/:id/review', async (req, res) => { await objectionClient.post(`/admin/objection/${req.params.id}/review`, {}, { headers: { Authorization: `Bearer ${req.session.token}` } }); res.redirect('/objection/admin/dashboard'); });
+app.post('/objection/admin/objection/:id/resolve', async (req, res) => { await objectionClient.post(`/admin/objection/${req.params.id}/resolve`, {}, { headers: { Authorization: `Bearer ${req.session.token}` } }); res.redirect('/objection/admin/dashboard'); });
+app.get('/objection/farmer/logout', (req, res) => req.session.destroy(() => res.redirect('/objection')));
+app.get('/objection/admin/logout', (req, res) => req.session.destroy(() => res.redirect('/objection/admin/login')));
 
-// — Start —
-app.listen(process.env.PORT||3000, ()=> console.log('🌐 Frontend up on port', process.env.PORT||3000));
+// CRDA UI
+app.get('/crda', (req, res) => res.render('crda/index', { user: req.session.user }));
+app.get('/crda/about', (req, res) => res.render('crda/about', { user: req.session.user }));
+app.get('/crda/login', (req, res) => res.render('crda/login', { error: req.query.error, success: req.query.success }));
+app.post('/crda/login', async (req, res) => { try { const { data } = await crdaClient.post('/login', req.body, { withCredentials: true }); req.session.user = data.user; res.redirect('/crda/services'); } catch { res.redirect('/crda/login?error=invalid_credentials'); } });
+app.get('/crda/logout', (req, res) => req.session.destroy(() => res.redirect('/crda/login')));
+app.get('/crda/register', (req, res) => res.render('crda/register', { error: req.query.error, success: req.query.success }));
+app.post('/crda/register', async (req, res) => { try { await crdaClient.post('/register', req.body); res.redirect('/crda/pending_approval'); } catch { res.redirect('/crda/register?error=registration_failed'); } });
+app.get('/crda/pending_approval', (req, res) => res.render('crda/pending_approval'));
+app.get('/crda/unapproved_login', (req, res) => res.render('crda/unapproved_login'));
+app.get('/crda/services', async (req, res) => { if (!req.session.user) return res.redirect('/crda/login'); try { const { data } = await crdaClient.get('/services', { withCredentials: true }); res.render('crda/services', { services: data.services }); } catch { res.redirect('/crda/login'); } });
+app.get('/crda/getservices', async (req, res) => { if (!req.session.user) return res.redirect('/crda/login'); try { const { rows } = await fetchPaginated(req, '/services', crdaClient); res.render('crda/afficher', { services: rows }); } catch { res.redirect('/crda/services'); } });
+app.get('/crda/editservice/:id', async (req, res) => { if (!req.session.user) return res.redirect('/crda/login'); try { const { data } = await crdaClient.get(`/services/${req.params.id}`, { withCredentials: true }); res.render('crda/editservice', { service: data }); } catch { res.redirect('/crda/getservices'); } });
+app.post('/crda/addservice', async (req, res) => { try { await crdaClient.post('/services', req.body, { withCredentials: true }); res.redirect('/crda/getservices'); } catch { res.redirect('/crda/services'); } });
+app.post('/crda/updateservice/:id', async (req, res) => { try { await crdaClient.put(`/services/${req.params.id}`, req.body, { withCredentials: true }); res.redirect('/crda/getservices'); } catch { res.redirect(`/crda/editservice/${req.params.id}`); } });
+app.get('/crda/report', (req, res) => { if (!req.session.user) return res.redirect('/crda/login'); res.render('crda/report', { isViewing: false }); });
+app.get('/crda/viewreport', async (req, res) => { if (!req.session.user) return res.redirect('/crda/login'); try { const { data } = await crdaClient.get(`/reports?cin=${req.query.cin}&sujet=${req.query.sujet}`, { withCredentials: true }); res.render('crda/report', { isViewing: true, report: data.report }); } catch { res.redirect('/crda/getreports'); } });
+app.get('/crda/getreports', async (req, res) => { if (!req.session.user) return res.redirect('/crda/login'); try { const { rows } = await fetchPaginated(req, '/reports', crdaClient); res.render('crda/getreports', { services: rows }); } catch { res.redirect('/crda/services'); } });
+app.post('/crda/addreport', async (req, res) => { try { await crdaClient.post('/reports', req.body, { withCredentials: true }); res.redirect('/crda/getreports'); } catch { res.redirect('/crda/report'); } });
+app.post('/crda/updatereport/:id', async (req, res) => { try { await crdaClient.put(`/reports/${req.params.id}`, req.body, { withCredentials: true }); res.redirect('/crda/getreports'); } catch { res.redirect(`/crda/editreport/${req.params.id}`); } });
+app.get('/crda/results', async (req, res) => { if (!req.session.user) return res.redirect('/crda/login'); try { const { data } = await crdaClient.get('/results', { withCredentials: true }); res.render('crda/results', { services: data.results }); } catch { res.redirect('/crda/getreports'); } });
+app.get('/crda/editresult/:id', async (req, res) => { if (!req.session.user) return res.redirect('/crda/login'); try { const { data } = await crdaClient.get(`/results?cin=${req.query.cin}&sujet=${req.query.sujet}`, { withCredentials: true }); const svc = data.results[0]; res.render('crda/editresult', { service: svc, result: svc.statut }); } catch { res.redirect('/crda/results'); } });
+app.post('/crda/updateresult', async (req, res) => { try { await crdaClient.post('/results', req.body, { withCredentials: true }); res.redirect('/crda/results'); } catch { res.redirect(`/crda/editresult/${req.body.id}`); } });
+app.get('/crda/admin/pending-accounts', async (req, res) => { if (!req.session.user) return res.redirect('/crda/login'); try { const { data } = await crdaClient.get('/admin/pending-accounts', { withCredentials: true }); res.render('crda/admin/pending-accounts', { accounts: data.accounts }); } catch { res.redirect('/crda/results'); } });
+app.post('/crda/admin/approve-account/:id', async (req, res) => { await crdaClient.post(`/admin/approve-account/${req.params.id}`, {}, { withCredentials: true }); res.redirect('/crda/admin/pending-accounts'); });
+app.post('/crda/admin/reject-account/:id', async (req, res) => { await crdaClient.post(`/admin/reject-account/${req.params.id}`, {}, { withCredentials: true }); res.redirect('/crda/admin/pending-accounts'); });
+
+app.use((req, res) => res.status(404).render('error', { status: 404, message: 'الصفحة غير موجودة', layout: false }));
+app.use((err, req, res, next) => { console.error(err); res.status(500).render('error', { status: 500, message: 'حدث خطأ غير متوقع', layout: false }); });
+
+app.listen(PORT, () => console.log(`Frontend UI listening on port ${PORT}`));

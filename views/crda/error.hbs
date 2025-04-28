@@ -1,0 +1,10 @@
+<div class="container mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-4">{{title}}</h1>
+  <p class="text-red-500">{{message}}</p>
+  {{#if error}}
+    <div class="mt-4 p-2 bg-gray-100">
+      {{#if error.status}}<p>Error code: {{error.status}}</p>{{/if}}
+      {{#if error.stack}}<pre class="text-xs">{{error.stack}}</pre>{{/if}}
+    </div>
+  {{/if}}
+</div>

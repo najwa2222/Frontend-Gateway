@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="script-src-attr 'unsafe-inline';  default-src 'self';
+  script-src 'self' https://cdn.tailwindcss.com 'unsafe-inline';
+  style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
+  font-src 'self' https://fonts.gstatic.com;
+">
+
+  <!-- Same head as previous template -->
+</head>
+<body class="bg-gray-50">
+<div class="container mx-auto p-4 lg:p-8">
+  <section class="bg-white rounded-2xl shadow-lg p-6 mx-auto max-w-3xl">
+    <form method="POST" action="/updateresult" class="space-y-6">
+      <input type="hidden" name="id" value="{{service.id}}">
+      
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-2xl font-semibold">تعديل النتيجة النهائية</h2>
+        <a href="/results" class="px-4 py-2 bg-gray-500 text-white rounded-lg">
+          إلغاء
+        </a>
+      </div>
+
+      <!-- Auto-filled Service Information -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block mb-2">الموضوع</label>
+          <input type="text" value="{{service.sujet}}" 
+                 class="w-full p-2 border rounded-lg" readonly>
+          <input type="hidden" name="sujet" value="{{service.sujet}}">
+        </div>
+        
+        <div>
+          <label class="block mb-2">الاسم</label>
+          <input type="text" value="{{service.prenom}}" 
+                 class="w-full p-2 border rounded-lg" readonly>
+          <input type="hidden" name="prenom" value="{{service.prenom}}">
+        </div>
+
+        <div>
+          <label class="block mb-2">اللقب</label>
+          <input type="text" value="{{service.nom}}" 
+                 class="w-full p-2 border rounded-lg" readonly>
+          <input type="hidden" name="nom" value="{{service.nom}}">
+        </div>
+
+        <div>
+          <label class="block mb-2">ب.ت.و</label>
+          <input type="text" value="{{service.cin}}" 
+                 class="w-full p-2 border rounded-lg" readonly>
+          <input type="hidden" name="cin" value="{{service.cin}}">
+        </div>
+
+        <div>
+          <label class="block mb-2">رقم المعاملة</label>
+          <input type="text" value="{{service.numero_transaction}}" 
+                 class="w-full p-2 border rounded-lg" readonly>
+          <input type="hidden" name="numero_transaction" 
+                 value="{{service.numero_transaction}}">
+        </div>
+      </div>
+
+<div class="border-t pt-6">
+  <label class="block text-lg mb-4 text-gray-800 font-medium">الحالة النهائية</label>
+  <div class="space-y-4">
+    <!-- Status Selection -->
+    <div class="space-y-4">
+      <label class="flex items-center space-x-3 p-4 bg-white rounded-lg border border-gray-200">
+        <input type="radio" name="statut" value="مقبول" required
+               class="w-5 h-5 text-green-600" 
+               {{#if (eq result 'مقبول')}}checked{{/if}}>
+        <span class="px-4 py-2 bg-green-100 text-green-800 rounded-lg">
+          مقبول
+        </span>
+      </label>
+
+      <label class="flex items-center space-x-3 p-4 bg-white rounded-lg border border-gray-200">
+        <input type="radio" name="statut" value="مرفوض" required
+               class="w-5 h-5 text-red-600"
+               {{#if (eq result 'مرفوض')}}checked{{/if}}>
+        <span class="px-4 py-2 bg-red-100 text-red-800 rounded-lg">
+          مرفوض
+        </span>
+      </label>
+    </div>
+  </div>
+</div>
+
+      <div class="border-t pt-6">
+        <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg">
+          حفظ التغييرات
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
+</body>
+</html>

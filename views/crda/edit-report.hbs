@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="script-src-attr 'unsafe-inline';  default-src 'self';
+  script-src 'self' https://cdn.tailwindcss.com 'unsafe-inline';
+  style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
+  font-src 'self' https://fonts.gstatic.com;
+">
+
+  <title>{{title}}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap');
+    body { font-family: 'Tajawal', sans-serif; }
+  </style>
+</head>
+
+<body class="bg-gray-50">
+<div class="container mx-auto p-4 lg:p-8">
+  <section class="bg-white rounded-2xl shadow-lg p-6 mx-auto max-w-3xl">
+    <form method="POST" action="/updatereport/{{report.id}}" class="space-y-6">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800">تعديل التقرير</h2>
+        <a href="/getreports" 
+           class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg">
+          إلغاء
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">المساحة (م²)</label>
+          <input type="number" name="surface" value="{{report.surface}}" 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">حدود قطعة الأرض</label>
+          <input type="text" name="limites_terrain" value="{{report.limites_terrain}}" 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">الموقع</label>
+          <input type="text" name="localisation" value="{{report.localisation}}" 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">مساحة البناءات القديمة (م²)</label>
+          <input type="number" name="superficie_batiments_anciens" 
+                 value="{{report.superficie_batiments_anciens}}" 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2">الملاحظات</label>
+          <textarea name="observations" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg h-32"
+          >{{report.observations}}</textarea>
+        </div>
+      </div>
+
+      <div class="border-t pt-6">
+        <button type="submit" 
+                class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+          حفظ التغييرات
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
+</body>
+</html>

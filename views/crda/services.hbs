@@ -1,0 +1,88 @@
+<div class="container mx-auto p-24 lg:p-10">
+  <div id="addservice" class="bg-white rounded-4xl shadow-lg p-12 mx-auto max-w-3xl">
+    <form method="post" action="/addservice" class="space-y-8">
+      <div class="text-center mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">الموضوع</label>
+        <br>
+        <select name="sujet" id="sujet" 
+                class="w-1/2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+          <option value="">اختر الموضوع</option>
+          <option value="حفر بئر">حفر بئر</option>
+          <option value="وحدة تبريد">وحدة تبريد</option>
+          <option value="اسطبل">اسطبل</option>
+          <option value="مسكن ريفي">مسكن ريفي</option>
+          <option value="بناء بيت / حفظ معدات">بناء بيت / حفظ معدات</option>
+        </select>
+      </div>
+<br>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">الاسم</label>
+          <input type="text" name="nom" id="nom" 
+                 class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">اللقب</label>
+          <input type="text" name="prenom" id="prenom" 
+                 class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">ب.ت.و</label>
+          <input type="text" name="cin" id="cin" 
+                 class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">رقم المعاملة</label>
+          <input type="text" name="numero_transaction" id="numero_transaction" 
+                 class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+      </div>
+      <br>
+      <!-- Documents Checkboxes -->
+      <div class="pt-6 border-t border-gray-200">
+        <br>
+        <h3 class="text-lg font-medium text-gray-800 mb-4">الوثائق المرفقة</h3>
+        <br>
+        <div class="grid grid-cols-2 gap-4">
+          <label class="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+            <input type="checkbox" name="certificat_propriete_terre" value="true" class="w-4 h-4">
+            <span class="text-gray-700 p-2">شهادة ملكية الأرض فلاحية</span>
+          </label>
+          <label class="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+            <input type="checkbox" name="copie_piece_identite_fermier" value="true" class="w-4 h-4">
+            <span class="text-gray-700 p-2">نسخة من بطاقة فلاح</span>
+          </label>
+          <label class="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+            <input type="checkbox" name="copie_piece_identite_nationale" value="true" class="w-4 h-4">
+            <span class="text-gray-700 p-2">نسخة من بطاقة تعريف الوطنية</span>
+          </label>
+          <label class="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+            <input type="checkbox" name="demande_but" value="true" class="w-4 h-4">
+            <span class="text-gray-700 p-2">مطلب للغرض</span>
+          </label>
+          <label class="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+            <input type="checkbox" name="copie_contrat_location_terrain" value="true" class="w-4 h-4">
+            <span class="text-gray-700 p-2">نسخة من عقد كراء الأرض</span>
+          </label>
+          <label class="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+            <input type="checkbox" name="autres_documents" value="true" class="w-4 h-4 ">
+            <span class="text-gray-700 p-2">وثائق أخرى</span>
+          </label>
+        </div>
+      </div>
+<br>
+      <!-- Form Buttons -->
+      <div class="flex justify-start gap-4 border-t pt-6 p-2">
+        
+        <button type="submit" 
+                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+          حفظ
+        </button>
+        <button type="reset" 
+                class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors">
+          مسح
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

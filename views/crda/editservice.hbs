@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="script-src-attr 'unsafe-inline';  default-src 'self';
+  script-src 'self' https://cdn.tailwindcss.com 'unsafe-inline';
+  style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
+  font-src 'self' https://fonts.gstatic.com;
+">
+
+  <title>تعديل الطلب</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap');
+    body { font-family: 'Tajawal', sans-serif; }
+  </style>
+</head>
+
+<body class="bg-gray-50">
+<div class="container mx-auto p-4 lg:p-8">
+  <section class="bg-white rounded-2xl shadow-lg p-6 mx-auto max-w-3xl">
+    <form method="POST" action="/updateservice/{{service.id}}" class="space-y-6">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800">تعديل الطلب</h2>
+        <a href="/getservices" 
+           class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg">
+          إلغاء
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Subject -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">الموضوع</label>
+          <input type="text" name="sujet" value="{{service.sujet}}" 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+        </div>
+
+        <!-- First Name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">الاسم</label>
+          <input type="text" name="prenom" value="{{service.prenom}}" 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+        </div>
+
+        <!-- Last Name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">اللقب</label>
+          <input type="text" name="nom" value="{{service.nom}}" 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+        </div>
+
+        <!-- CIN -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">ب.ت.و</label>
+          <input type="text" name="cin" value="{{service.cin}}" 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+        </div>
+
+        <!-- Transaction Number -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">رقم المعاملة</label>
+          <input type="text" name="numero_transaction" value="{{service.numero_transaction}}" 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+        </div>
+
+        <!-- Documents Section -->
+        <div class="md:col-span-2">
+          <h3 class="text-lg font-medium text-gray-800 mb-4">الوثائق المرفقة</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Land Ownership Certificate -->
+            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+              <input type="checkbox" name="certificat_propriete_terre" 
+                     class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md"
+                     {{#if service.certificat_propriete_terre}}checked{{/if}}>
+              <span>شهادة ملكية الأرض فلاحية</span>
+            </label>
+
+            <!-- Farmer ID Copy -->
+            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+              <input type="checkbox" name="copie_piece_identite_fermier" 
+                     class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md"
+                     {{#if service.copie_piece_identite_fermier}}checked{{/if}}>
+              <span>نسخة من بطاقة فلاح</span>
+            </label>
+
+            <!-- National ID Copy -->
+            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+              <input type="checkbox" name="copie_piece_identite_nationale" 
+                     class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md"
+                     {{#if service.copie_piece_identite_nationale}}checked{{/if}}>
+              <span>نسخة من بطاقة تعريف الوطنية</span>
+            </label>
+
+            <!-- Purpose Request -->
+            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+              <input type="checkbox" name="demande_but" 
+                     class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md"
+                     {{#if service.demande_but}}checked{{/if}}>
+              <span>مطلب للغرض</span>
+            </label>
+
+            <!-- Land Lease Contract -->
+            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+              <input type="checkbox" name="copie_contrat_location_terrain" 
+                     class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md"
+                     {{#if service.copie_contrat_location_terrain}}checked{{/if}}>
+              <span>نسخة من عقد كراء الأرض</span>
+            </label>
+
+            <!-- Other Documents -->
+            <label class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+              <input type="checkbox" name="autres_documents" 
+                     class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded-md"
+                     {{#if service.autres_documents}}checked{{/if}}>
+              <span>وثائق أخرى</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t pt-6">
+        <button type="submit" 
+                class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+          حفظ التغييرات
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
+</body>
+</html>

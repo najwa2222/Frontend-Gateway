@@ -22,8 +22,10 @@ spec:
         env:
         - name: PORT
           value: "3000"
-        - name: API_URL
+        - name: OBJECTION_API_URL
           value: "http://objection-app-service:3001"
+        - name: CRDA_API_URL
+          value: "http://crda-app-service:3002"
         - name: SESSION_SECRET
           valueFrom:
             secretKeyRef:

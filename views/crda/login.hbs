@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول</title>
+    <style>
+
+        .login-card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            margin-top: 60px;
+        }
+
+        /* Error Message Styles */
+        .error-flash {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px 25px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 2px solid #fca5a5;
+            animation: slideDown 0.3s ease-out forwards;
+            z-index: 100;
+            max-width: 90%;
+        }
+
+        .error-flash button {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 1.5rem;
+            line-height: 1;
+            padding-left: 15px;
+            transition: opacity 0.2s;
+        }
+
+        .error-flash button:hover {
+            opacity: 0.8;
+        }
+
+        @keyframes slideDown {
+            from {
+                top: -175px;
+                opacity: 0;
+            }
+            to {
+                top: -115px;
+                opacity: 1;
+            }
+        }
+
+        /* Form Elements */
+        .login-title {
+            color: #1a365d;
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: #4299e1;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 12px;
+            background: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .login-button:hover {
+            background: #3182ce;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <section class="login-container">
+        <div class="login-card">
+            <div id="errorContainer"></div>
+            
+            <h1 class="login-title">تسجيل الدخول إلى حسابك</h1>
+            
+            <form class="login-form" action="/login" method="post">
+                <div class="input-group">
+                    <label for="email_user">اسم المستخدم</label>
+                    <input 
+                        type="email" 
+                        id="email_user" 
+                        name="email_user" 
+                        placeholder="example@crda.com" 
+                        required
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label for="password_user">كلمة المرور</label>
+                    <input 
+                        type="password" 
+                        id="password_user" 
+                        name="password_user" 
+                        placeholder="••••••••" 
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="login-button">
+                    <span class="button-text">تسجيل الدخول</span>
+                </button>
+
+                <p class="register-link">
+                    ليس لديك حساب؟ 
+                    <a href="/register">سجل الآن</a>
+                </p>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        // Error Message Handling
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            
+            if (error === 'invalid_credentials') {
+                createErrorMessage(
+                    'بيانات الاعتماد غير صحيحة. يرجى مراجعة المعلومات المدخلة'
+                );
+            }
+        });
+
+        function createErrorMessage(text) {
+            const errorContainer = document.getElementById('errorContainer');
+            
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'error-flash';
+            errorMessage.innerHTML = `
+                <span>${text}</span>
+                <button type="button" class="close-btn">&times;</button>
+            `;
+            
+            errorMessage.querySelector('.close-btn').addEventListener('click', () => {
+                errorMessage.remove();
+            });
+
+            errorContainer.appendChild(errorMessage);
+        }
+
+        // Loading State
+        document.querySelector('.login-form').addEventListener('submit', (e) => {
+            const button = e.target.querySelector('button');
+            button.innerHTML = `<div class="loading-spinner"></div> جاري التحميل...`;
+            button.disabled = true;
+        });
+    </script>
+</body>
+</html>
