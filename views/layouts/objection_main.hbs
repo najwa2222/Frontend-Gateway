@@ -14,67 +14,72 @@
 </head>
 <body>
 
-  <!-- Navigation Bar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-      <a class="navbar-brand" href="/objection">نظام المزارعين <i class="fas fa-tractor ms-1"></i></a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/objection">نظام الاعتراضات</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/objection">الرئيسية</a>
+        </li>
+        
+        {{!-- Display these links only if user is an admin --}}
+        {{#if isAdmin}}
           <li class="nav-item">
-            <a class="nav-link" href="/objection">الرئيسية <i class="fas fa-home me-1"></i></a>
+            <a class="nav-link" href="/objection/admin/dashboard">لوحة التحكم</a>
           </li>
-
-          {{#if session.admin}}
-            <li class="nav-item">
-              <a class="nav-link" href="/objection/admin/dashboard">لوحة الإدارة <i class="fas fa-cogs me-1"></i></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/objection/admin/archive">عرض الأرشيف <i class="fas fa-archive me-1"></i></a>
-            </li>
-          {{else if session.farmerId}}
-            <li class="nav-item">
-              <a class="nav-link" href="/objection/farmer/dashboard">لوحة التحكم <i class="fas fa-tachometer-alt me-1"></i></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/objection/objection/new">إضافة اعتراض جديد <i class="fas fa-plus-circle me-1"></i></a>
-            </li>
-          {{/if}}
-        </ul>
-
-        <ul class="navbar-nav">
-          {{#if session.admin}}
-            <li class="nav-item">
-              <span class="nav-link text-warning">مرحباً، مدير النظام <i class="fas fa-user-shield me-1"></i></span>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/objection/admin/logout">تسجيل الخروج <i class="fas fa-sign-out-alt me-1"></i></a>
-            </li>
-          {{else if session.farmerId}}
-            <li class="nav-item">
-              <span class="nav-link text-warning">مرحباً، {{session.user.first_name}} <i class="fas fa-user me-1"></i></span>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/objection/farmer/logout">تسجيل الخروج <i class="fas fa-sign-out-alt me-1"></i></a>
-            </li>
-          {{else}}
-            <li class="nav-item">
-              <a class="nav-link" href="/objection/farmer/register">تسجيل مزارع <i class="fas fa-user-plus me-1"></i></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/objection/farmer/login">دخول مزارع <i class="fas fa-sign-in-alt me-1"></i></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/objection/admin/login">دخول الإدارة <i class="fas fa-lock me-1"></i></a>
-            </li>
-          {{/if}}
-        </ul>
-      </div>
+          <li class="nav-item">
+            <a class="nav-link" href="/objection/admin/archive">الأرشيف</a>
+          </li>
+        {{/if}}
+        
+        {{!-- Display these links only if user is a farmer --}}
+        {{#if isFarmer}}
+          <li class="nav-item">
+            <a class="nav-link" href="/objection/farmer/dashboard">لوحة التحكم</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/objection/objection/new">إضافة اعتراض جديد</a>
+          </li>
+        {{/if}}
+      </ul>
+      
+      <ul class="navbar-nav">
+        {{!-- If user is logged in (either admin or farmer) --}}
+        {{#if isLoggedIn}}
+          <li class="nav-item">
+            {{#if isAdmin}}
+              <span class="nav-link text-warning">مرحباً، المسؤول</span>
+            {{else if isFarmer}}
+              <span class="nav-link text-warning">مرحباً، {{user.first_name}}</span>
+            {{else}}
+              <span class="nav-link text-warning">مرحباً، المستخدم</span>
+            {{/if}}
+          </li>
+          <li class="nav-item">
+            {{#if isAdmin}}
+              <a class="nav-link" href="/objection/admin/logout">تسجيل الخروج</a>
+            {{else}}
+              <a class="nav-link" href="/objection/farmer/logout">تسجيل الخروج</a>
+            {{/if}}
+          </li>
+        {{else}}
+          {{!-- If not logged in --}}
+          <li class="nav-item">
+            <a class="nav-link" href="/objection/farmer/login">تسجيل الدخول</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/objection/farmer/register">تسجيل جديد</a>
+          </li>
+        {{/if}}
+      </ul>
     </div>
-  </nav>
+  </div>
+</nav>
 
   <!-- Flash Messages -->
   <div class="container mt-3">

@@ -56,6 +56,7 @@ app.use((req, res, next) => {
 app.engine('.hbs', exphbs.create({
   extname: '.hbs',
   layoutsDir: path.join(__dirname, 'views', 'layouts'),
+  partialsDir: path.join(__dirname, 'views', 'partials'),
   defaultLayout: false,
   helpers: {
     eq: (a, b) => a == b,
@@ -112,18 +113,42 @@ objectionClient.interceptors.response.use(
 );
 
 app.use((req, res, next) => {
-  // Make session data available to all views
+  // Log the entire session data on each request
+  console.log('SESSION DATA:', JSON.stringify({
+    token: !!req.session.token,
+    admin: !!req.session.admin,
+    user: req.session.user
+  }, null, 2));
+  next();
+});
+
+app.use((req, res, next) => {
+  // Make raw session data available
   res.locals.session = req.session;
   
-  // Explicitly set login status flags to make template conditions easier
+  // Check token existence 
   res.locals.isLoggedIn = !!req.session.token;
+  
+  // Check admin flag
   res.locals.isAdmin = !!req.session.admin;
+  
+  // Check farmer status (has token and user, but not admin)
   res.locals.isFarmer = !!req.session.token && !!req.session.user && !req.session.admin;
   
-  // Pass the user object directly for easy access
-  res.locals.user = req.session.user;
+  // Add user directly if it exists
+  if (req.session.user) {
+    res.locals.user = req.session.user;
+  }
   
-  // Make flash messages available to templates
+  // Debug log what we're passing to templates
+  console.log('TEMPLATE VARS:', {
+    isLoggedIn: res.locals.isLoggedIn,
+    isAdmin: res.locals.isAdmin,
+    isFarmer: res.locals.isFarmer,
+    user: res.locals.user
+  });
+  
+  // Add flash messages
   res.locals.flash = {
     success: req.flash('success'),
     error: req.flash('error')
@@ -177,19 +202,34 @@ app.post('/objection/farmer/register', async (req, res) => {
 app.get('/objection/farmer/login', (req, res) => res.render('objection/farmer_login'));
 app.post('/objection/farmer/login', async (req, res) => {
   try {
+    // Call the API to validate login
     const { data } = await objectionClient.post('/farmer/login', req.body);
     
-    // Store token and user data in session
+    // Store JWT token in session
     req.session.token = data.token;
+    
+    // Store farmer data in session
     req.session.user = data.farmer;
     
-    // Explicitly set farmer flag (and ensure admin is not set)
+    // Explicitly set farmer status (not admin)
     req.session.admin = false;
     
-    // Redirect to dashboard
-    res.redirect('/objection/farmer/dashboard');
+    // Log what we're saving in session
+    console.log('LOGIN SAVED SESSION:', {
+      token: !!req.session.token,
+      user: req.session.user,
+      admin: req.session.admin
+    });
+    
+    // Save session before redirecting
+    req.session.save(err => {
+      if (err) {
+        console.error('Session save error:', err);
+      }
+      res.redirect('/objection/farmer/dashboard');
+    });
   } catch (error) {
-    console.error("Login error:", error.message);
+    console.error('Login error:', error.message);
     req.flash('error', 'بيانات غير صحيحة');
     res.redirect('/objection/farmer/login');
   }
@@ -368,6 +408,21 @@ app.post('/crda/admin/approve-account/:id', async (req, res) => { await crdaClie
 app.post('/crda/admin/reject-account/:id', async (req, res) => { await crdaClient.post(`/admin/reject-account/${req.params.id}`, {}, { withCredentials: true }); res.redirect('/crda/admin/pending-accounts'); });
 
 app.get('/livez', (req, res) => res.status(200).send('Frontend is up'));
+app.get('/objection/debug-session', (req, res) => {
+  res.json({
+    sessionData: {
+      token: !!req.session.token, 
+      admin: req.session.admin,
+      user: req.session.user
+    },
+    templateVars: {
+      isLoggedIn: res.locals.isLoggedIn,
+      isAdmin: res.locals.isAdmin,
+      isFarmer: res.locals.isFarmer,
+      user: res.locals.user
+    }
+  });
+});
 
 app.use((req, res) => res.status(404).render('error', { status: 404, message: 'الصفحة غير موجودة', layout: false }));
 app.use((err, req, res, next) => { console.error(err); res.status(500).render('error', { status: 500, message: 'حدث خطأ غير متوقع', layout: false }); });
