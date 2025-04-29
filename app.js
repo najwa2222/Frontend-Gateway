@@ -87,8 +87,39 @@ app.set('views', path.join(__dirname, 'views'));
 const crdaClient = axios.create({ baseURL: CRDA_API, withCredentials: true });
 const objectionClient = axios.create({ baseURL: OBJECTION_API, withCredentials: true });
 
+crdaClient.interceptors.response.use(
+  response => response,
+  error => {
+    console.error('API Error:', error.message);
+    if (error.response) {
+      console.error('Response status:', error.response.status);
+      console.error('Response data:', error.response.data);
+    }
+    return Promise.reject(error);
+  }
+);
+
+objectionClient.interceptors.response.use(
+  response => response,
+  error => {
+    console.error('API Error:', error.message);
+    if (error.response) {
+      console.error('Response status:', error.response.status);
+      console.error('Response data:', error.response.data);
+    }
+    return Promise.reject(error);
+  }
+);
+
 app.use((req, res, next) => {
+  // Make session data available to all views
   res.locals.session = req.session;
+  
+  // Explicitly set farmer and admin flags to make template conditions easier
+  res.locals.isLoggedIn = !!req.session.user || !!req.session.token;
+  res.locals.isAdmin = !!req.session.admin;
+  res.locals.isFarmer = !res.locals.isAdmin && !!req.session.token && !!req.session.user;
+  
   res.locals.flash = {
     success: req.flash('success'),
     error: req.flash('error')
@@ -99,8 +130,28 @@ app.use((req, res, next) => {
 async function fetchPaginated(req, path, client) {
   const page = parseInt(req.query.page) || 1;
   const search = (req.query.search || '').trim();
-  const { data } = await client.get(path, { params: { page, search } });
-  return data;
+  
+  // Create config with params
+  const config = { 
+    params: { page, search } 
+  };
+  
+  // Add auth token if available in session
+  if (req.session.token) {
+    config.headers = {
+      Authorization: `Bearer ${req.session.token}`
+    };
+  }
+  
+  // Make the request with proper error handling
+  try {
+    const { data } = await client.get(path, config);
+    return data;
+  } catch (error) {
+    console.error(`Error fetching paginated data from ${path}:`, error.message);
+    // Re-throw to be handled by the route handler
+    throw error;
+  }
 }
 
 app.get('/', (req, res) => res.redirect('/crda'));
@@ -167,11 +218,25 @@ app.post('/objection/farmer/reset-password', async (req, res) => {
 app.get('/objection/farmer/dashboard', async (req, res) => {
   if (!req.session.token) return res.redirect('/objection/farmer/login');
   try {
-    const { data: objections } = await objectionClient.get('/objection', { headers: { Authorization: `Bearer ${req.session.token}` } });
-    const { data: eligibility } = await objectionClient.get('/objection/can-submit', { headers: { Authorization: `Bearer ${req.session.token}` } });
-    res.render('objection/farmer_dashboard', { objections, canSubmitNewObjection: eligibility.canSubmit });
-  } catch {
-    req.flash('error', 'خطأ في تحميل البيانات');
+    // Get objection data with proper error handling
+    const objResponse = await objectionClient.get('/objection', { 
+      headers: { Authorization: `Bearer ${req.session.token}` }
+    });
+    
+    // Get eligibility with proper error handling
+    const eligResponse = await objectionClient.get('/objection/can-submit', { 
+      headers: { Authorization: `Bearer ${req.session.token}` }
+    });
+    
+    res.render('objection/farmer_dashboard', { 
+      objections: objResponse.data, 
+      canSubmitNewObjection: eligResponse.data.canSubmit,
+      user: req.session.user
+    });
+  } catch (error) {
+    // More detailed error handling
+    console.error("Dashboard error:", error.message);
+    req.flash('error', 'خطأ في تحميل البيانات - الرجاء المحاولة مرة أخرى');
     res.redirect('/objection');
   }
 });
@@ -187,37 +252,75 @@ app.post('/objection/objection/new', async (req, res) => {
   }
 });
 app.get('/objection/admin/login', (req, res) => res.render('objection/admin_login'));
+
 app.post('/objection/admin/login', async (req, res) => {
   try {
     const { data } = await objectionClient.post('/admin/login', req.body);
     req.session.token = data.token;
     req.session.admin = true;
+    req.session.user = { admin: true }; // Add this to maintain consistent session structure
     res.redirect('/objection/admin/dashboard');
-  } catch {
+  } catch (error) {
+    console.error("Admin login error:", error.message);
     req.flash('error', 'بيانات الدخول غير صحيحة');
     res.redirect('/objection/admin/login');
   }
 });
+
 app.get('/objection/admin/dashboard', async (req, res) => {
   if (!req.session.admin) return res.redirect('/objection/admin/login');
   try {
-    const { rows, page, totalPages, searchTerm } = await fetchPaginated(req, '/admin/objections', objectionClient);
-    res.render('objection/admin_dashboard', { rows, page, totalPages, searchTerm });
-  } catch {
-    req.flash('error', 'خطأ في تحميل البيانات');
-    res.redirect('/objection/admin/login');
+    // Use improved fetchPaginated which now includes auth headers
+    const data = await fetchPaginated(req, '/admin/objections', objectionClient);
+    
+    res.render('objection/admin_dashboard', {
+      rows: data.rows,
+      page: data.page,
+      totalPages: data.totalPages,
+      searchTerm: data.searchTerm,
+      admin: true  // Explicitly mark as admin view
+    });
+  } catch (error) {
+    console.error('Admin dashboard load error:', error.message);
+    
+    // Check if it's an auth error
+    if (error.response && error.response.status === 401) {
+      req.flash('error', 'انتهت صلاحية الجلسة، يرجى إعادة تسجيل الدخول');
+      req.session.destroy(() => res.redirect('/objection/admin/login'));
+    } else {
+      req.flash('error', 'خطأ في تحميل البيانات: ' + (error.response?.data?.message || 'حاول مرة أخرى'));
+      res.redirect('/objection/admin/login');
+    }
   }
 });
+
 app.get('/objection/admin/archive', async (req, res) => {
   if (!req.session.admin) return res.redirect('/objection/admin/login');
   try {
-    const { rows, page, totalPages, searchTerm } = await fetchPaginated(req, '/admin/archive', objectionClient);
-    res.render('objection/admin_archive', { rows, page, totalPages, searchTerm });
-  } catch {
-    req.flash('error', 'خطأ في تحميل الأرشيف');
-    res.redirect('/objection/admin/dashboard');
+    // Use improved fetchPaginated function
+    const data = await fetchPaginated(req, '/admin/archive', objectionClient);
+    
+    res.render('objection/admin_archive', {
+      rows: data.rows,
+      page: data.page,
+      totalPages: data.totalPages,
+      searchTerm: data.searchTerm,
+      admin: true  // Explicitly mark as admin view
+    });
+  } catch (error) {
+    console.error('Admin archive load error:', error.message);
+    
+    // Check if it's an auth error
+    if (error.response && error.response.status === 401) {
+      req.flash('error', 'انتهت صلاحية الجلسة، يرجى إعادة تسجيل الدخول');
+      req.session.destroy(() => res.redirect('/objection/admin/login'));
+    } else {
+      req.flash('error', 'خطأ في تحميل الأرشيف: ' + (error.response?.data?.message || 'حاول مرة أخرى'));
+      res.redirect('/objection/admin/dashboard');
+    }
   }
 });
+
 app.post('/objection/admin/objection/:id/review', async (req, res) => { await objectionClient.post(`/admin/objection/${req.params.id}/review`, {}, { headers: { Authorization: `Bearer ${req.session.token}` } }); res.redirect('/objection/admin/dashboard'); });
 app.post('/objection/admin/objection/:id/resolve', async (req, res) => { await objectionClient.post(`/admin/objection/${req.params.id}/resolve`, {}, { headers: { Authorization: `Bearer ${req.session.token}` } }); res.redirect('/objection/admin/dashboard'); });
 app.get('/objection/farmer/logout', (req, res) => req.session.destroy(() => res.redirect('/objection')));
@@ -226,6 +329,7 @@ app.get('/objection/admin/logout', (req, res) => req.session.destroy(() => res.r
 // CRDA UI
 app.get('/crda', (req, res) => res.render('crda/index', { user: req.session.user }));
 app.get('/crda/about', (req, res) => res.render('crda/about', { user: req.session.user }));
+app.get('/crda/check-status', (req, res) => res.render('crda/check-status', { user: req.session.user }));
 app.get('/crda/login', (req, res) => res.render('crda/login', { error: req.query.error, success: req.query.success }));
 app.post('/crda/login', async (req, res) => { try { const { data } = await crdaClient.post('/login', req.body, { withCredentials: true }); req.session.user = data.user; res.redirect('/crda/services'); } catch { res.redirect('/crda/login?error=invalid_credentials'); } });
 app.get('/crda/logout', (req, res) => req.session.destroy(() => res.redirect('/crda/login')));
