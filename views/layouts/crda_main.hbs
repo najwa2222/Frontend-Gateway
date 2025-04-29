@@ -45,33 +45,33 @@
                         <a href="/" class="text-black mx-4 relative" aria-current="page">الصفحة الرئسية</a>
                     </li>
                     <li>
-                    <a href="/check-status" class="text-black mx-4">التحقق من الحالة</a>
+                    <a href="/crda/check-status" class="text-black mx-4">التحقق من الحالة</a>
                     </li>
                     <li class="nav-item">
-                        <a href="/about" class="text-black mx-4 relative">من نحن</a>
+                        <a href="/crda/about" class="text-black mx-4 relative">من نحن</a>
                     </li>
 
                     {{#if user}}
       <!-- Chef Menu -->
       {{#if (eq user.role_user 'chef_dentreprise')}}
-        <li><a href="/services" class="text-black mx-4">تسجيل معطيات</a></li>
-        <li><a href="/getservices" class="text-black mx-4">المحتوى</a></li>
+        <li><a href="/crda/services" class="text-black mx-4">تسجيل معطيات</a></li>
+        <li><a href="/crda/getservices" class="text-black mx-4">المحتوى</a></li>
       {{/if}}
 
       <!-- Gerant Menu -->
       {{#if (eq user.role_user 'gerant')}}
-        <li><a href="/getreports" class="text-black mx-4">التقارير</a></li>
-        <li><a href="/report" class="text-black mx-4">إنشاء تقرير</a></li>
+        <li><a href="/crda/getreports" class="text-black mx-4">التقارير</a></li>
+        <li><a href="/crda/report" class="text-black mx-4">إنشاء تقرير</a></li>
       {{/if}}
 
       <!-- Directeur Menu -->
       {{#if (eq user.role_user 'directeur')}}
-        <li><a href="/results" class="text-black mx-4">النتائج</a></li>
-        <li><a href="/admin/pending-accounts" class="text-black mx-4">الحسابات المعلقة</a></li>
+        <li><a href="/crda/results" class="text-black mx-4">النتائج</a></li>
+        <li><a href="/crda/admin/pending-accounts" class="text-black mx-4">الحسابات المعلقة</a></li>
       {{/if}}
 
       <!-- Shared Menu Items -->
-      <li><a href="/logout" class="text-black mx-4">تسجيل الخروج</a></li>
+      <li><a href="/crda/logout" class="text-black mx-4">تسجيل الخروج</a></li>
     {{/if}}
                 </ul>
             </div>
@@ -101,14 +101,6 @@
                     </ul>
                 </div>
                 
-                <div>
-                    <h3 class="text-xl font-bold mb-4">روابط سريعة</h3>
-                    <ul class="text-gray-400 space-y-2">
-                        <li><a href="/services" class="hover:text-white">تسجيل معطيات</a></li>
-                        <li><a href="/getservices" class="hover:text-white">المحتوى</a></li>
-                        <li><a href="/results" class="hover:text-white">النتائج النهائية</a></li>
-                    </ul>
-                </div>
             </div>
             
             <div class="border-t border-gray-700 mt-8 pt-4 text-center text-gray-400">
