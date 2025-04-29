@@ -189,7 +189,7 @@ app.post('/objection/objection/new', async (req, res) => {
 app.get('/objection/admin/login', (req, res) => res.render('objection/admin_login'));
 app.post('/objection/admin/login', async (req, res) => {
   try {
-    const { data } = await objectionClient.post('/objection/admin/login', req.body);
+    const { data } = await objectionClient.post('/admin/login', req.body);
     req.session.token = data.token;
     req.session.admin = true;
     res.redirect('/objection/admin/dashboard');
