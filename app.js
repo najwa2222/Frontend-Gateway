@@ -115,15 +115,20 @@ app.use((req, res, next) => {
   // Make session data available to all views
   res.locals.session = req.session;
   
-  // Explicitly set farmer and admin flags to make template conditions easier
-  res.locals.isLoggedIn = !!req.session.user || !!req.session.token;
+  // Explicitly set login status flags to make template conditions easier
+  res.locals.isLoggedIn = !!req.session.token;
   res.locals.isAdmin = !!req.session.admin;
-  res.locals.isFarmer = !res.locals.isAdmin && !!req.session.token && !!req.session.user;
+  res.locals.isFarmer = !!req.session.token && !!req.session.user && !req.session.admin;
   
+  // Pass the user object directly for easy access
+  res.locals.user = req.session.user;
+  
+  // Make flash messages available to templates
   res.locals.flash = {
     success: req.flash('success'),
     error: req.flash('error')
   };
+  
   next();
 });
 
@@ -173,10 +178,18 @@ app.get('/objection/farmer/login', (req, res) => res.render('objection/farmer_lo
 app.post('/objection/farmer/login', async (req, res) => {
   try {
     const { data } = await objectionClient.post('/farmer/login', req.body);
+    
+    // Store token and user data in session
     req.session.token = data.token;
     req.session.user = data.farmer;
+    
+    // Explicitly set farmer flag (and ensure admin is not set)
+    req.session.admin = false;
+    
+    // Redirect to dashboard
     res.redirect('/objection/farmer/dashboard');
-  } catch {
+  } catch (error) {
+    console.error("Login error:", error.message);
     req.flash('error', 'بيانات غير صحيحة');
     res.redirect('/objection/farmer/login');
   }
