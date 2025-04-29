@@ -53,19 +53,19 @@
             <td class="px-6 py-4">
               <div class="flex flex-wrap gap-2">
                 {{#if report_id}}
-                  <a href="/viewreport?cin={{cin}}&sujet={{sujet}}"
+                  <a href="/crda/viewreport?cin={{cin}}&sujet={{sujet}}"
                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
                     عرض تقرير
                   </a>
                 {{else}}
-                  <a href="/report?cin={{cin}}&sujet={{sujet}}&prenom={{prenom}}&nom={{nom}}"
+                  <a href="/crda/report?cin={{cin}}&sujet={{sujet}}&prenom={{prenom}}&nom={{nom}}"
                     class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
                     إنشاء تقرير
                   </a>
                 {{/if}}
                 
                 {{#if report_id}}
-                  <a href="/editreport/{{report_id}}"
+                  <a href="/crda/editreport/{{report_id}}"
                     class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg">
                     تعديل تقرير
                   </a>

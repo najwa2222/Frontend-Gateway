@@ -6,14 +6,14 @@
 
   <div class="card-body">
     <!-- Search Form -->
-    <form action="/admin/dashboard" method="GET" class="mb-4">
+    <form action="/objection/admin/dashboard" method="GET" class="mb-4">
       <div class="input-group">
         <input type="text" name="search" class="form-control" placeholder="البحث برقم المعاملة..." value="{{searchTerm}}">
         <button class="btn btn-primary" type="submit">
           <i class="fas fa-search"></i> بحث
         </button>
         {{#if searchTerm}}
-        <a href="/admin/dashboard" class="btn btn-secondary">
+        <a href="/objection/admin/dashboard" class="btn btn-secondary">
           <i class="fas fa-times"></i> إلغاء البحث
         </a>
         {{/if}}
@@ -46,7 +46,7 @@
               <td>
                 <div class="btn-group">
                   {{#if (eq status "pending")}}
-                  <form action="/admin/objection/{{id}}/review" method="POST">
+                  <form action="/objection/admin/objection/{{id}}/review" method="POST">
                     <button type="submit" class="btn btn-sm btn-info">
                       مراجعة <i class="fas fa-check me-1"></i>
                     </button>
@@ -54,7 +54,7 @@
                   {{/if}}
 
                   {{#if (eq status "reviewed")}}
-                  <form action="/admin/objection/{{id}}/resolve" method="POST">
+                  <form action="/objection/admin/objection/{{id}}/resolve" method="POST">
                     <button type="submit" class="btn btn-sm btn-success">
                       حل <i class="fas fa-check-double me-1"></i>
                     </button>
@@ -73,7 +73,7 @@
         <ul class="pagination justify-content-center">
           {{#each (range 1 totalPages)}}
           <li class="page-item {{#if (eq this ../page)}}active{{/if}}">
-            <a class="page-link" href="/admin/dashboard?page={{this}}{{#if ../searchTerm}}&search={{../searchTerm}}{{/if}}">{{this}}</a>
+            <a class="page-link" href="/objection/admin/dashboard?page={{this}}{{#if ../searchTerm}}&search={{../searchTerm}}{{/if}}">{{this}}</a>
           </li>
           {{/each}}
         </ul>

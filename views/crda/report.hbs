@@ -26,13 +26,13 @@
           {{#if isViewing}}عرض التقرير{{else}}إنشاء تقرير{{/if}}
         </h2>
         {{#if (eq user.role_user 'gerant')}}
-        <a href="/getreports"
+        <a href="/crda/getreports"
            class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors">
           {{#if isViewing}}عودة{{else}}الغاء{{/if}}
         </a>
         {{/if}}
           {{#if (eq user.role_user 'directeur')}}
-          <a href="/results"
+          <a href="/crda/results"
            class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors">
           {{#if isViewing}}عودة{{else}}الغاء{{/if}}
         </a>
