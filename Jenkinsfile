@@ -114,7 +114,7 @@ pipeline {
     success {
       slackSend(
         color: 'good',
-        message: "Frontend build & deploy succeeded: ${env.BUILD_URL}",
+        message: "Frontend build & deploy succeeded ${env.BUILD_URL}",
         channel: '#jenkins-builds',
         tokenCredentialId: 'slack-token'
       )
